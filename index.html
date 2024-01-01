@@ -14,20 +14,21 @@
     .button-container {
       display: flex;
       align-items: center;
+      justify-content: space-around;
+      /* Adjust as needed */
     }
 
-    /* Style for both buttons */
+    /* Style for all buttons */
     .linkedin-button,
     .cv-button {
-      background-color: #0077B5;
-      color: #fff;
+      display: flex;
+      align-items: center;
       text-decoration: none;
       padding: 5px 5px;
       border-radius: 5px;
       font-weight: bold;
       transition: background-color 0.3s ease;
       margin-right: 10px;
-      /* Adjust the margin as needed */
     }
 
     .linkedin-button:hover,
@@ -40,7 +41,17 @@
       color: #fff;
       /* Text color remains white on hover */
     }
+
+    /* Style for button images */
+    .linkedin-button img,
+    .cv-button img {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+      /* Adjust as needed for spacing between image and text */
+    }
   </style>
+
 
 
 </head>
@@ -56,23 +67,30 @@
 
       <!-- Container for buttons -->
       <div class="button-container">
-        
+
+        <!-- LinkedIn button with logo -->
         <a class="linkedin-button" href="https://www.linkedin.com/in/tlechien" target="_blank">
-          <img src="/assets/linkedinwhite.png" alt="Linkedin" style="width: 32px; height: 32px;">
+          <img src="/assets/linkedin_logo.png" alt="LinkedIn Logo">
+          LinkedIn Profile
         </a>
 
+        <!-- ResearchGate button with logo -->
         <a class="linkedin-button" href="https://www.researchgate.net/profile/Thibault-Lechien-2" target="_blank">
-          <img src="/assets/RGlogowhite.png" alt="ResearchGate" style="width: 32px; height: 32px;">
+          <img src="/assets/RGlogowhite.png" alt="ResearchGate Logo">
+          ResearchGate Profile
         </a>
-        
-        <a class="linkedin-button" href="https://scholar.google.be/citations?user=ohWNXuEAAAAJ&hl=en&oi=ao" target="_blank">
-          <img src="/assets/Gscholarblackwhite.png" alt="Google Scholar" style="width: 32px; height: 32px;">
+
+        <!-- Google Scholar button with logo -->
+        <a class="linkedin-button" href="https://scholar.google.be/citations?user=ohWNXuEAAAAJ&hl=en&oi=ao"
+          target="_blank">
+          <img src="/assets/GScholarlogo.png" alt="Google Scholar Logo">
+          Google Scholar Profile
         </a>
 
       </div>
 
       <p></p>
-      
+
       <!-- CV button -->
       <p><a class="cv-button" href="/assets/CV.pdf" target="_blank">Download my CV</a></p>
 
