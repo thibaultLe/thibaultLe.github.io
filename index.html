@@ -11,6 +11,22 @@
   <meta name="viewport" content="width=device-width">
 
   <style>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1f1f1f;
+        /* Dark background color */
+        color: #fff;
+        /* Light text color */
+      }
+
+      .button-container {
+        background-color: #333;
+        /* Dark background color for buttons */
+      }
+
+      /* Adjust other styles for dark mode */
+    }
+
     .button-container {
       display: flex;
       align-items: center;
@@ -32,7 +48,7 @@
       transition: background-color 0.3s ease;
     }
 
-    .linkedin-button:hover{
+    .linkedin-button:hover {
       background-color: #005082;
     }
 
@@ -43,7 +59,7 @@
     }
 
     /* Style for button images */
-    .linkedin-button img{
+    .linkedin-button img {
       width: 32px;
       height: 32px;
       /* Adjust as needed for spacing between image and text */
@@ -82,9 +98,8 @@
           <img src="/assets/Gscholarblackwhite.png" alt="Google Scholar">
         </a>
 
-        
-        <a class="linkedin-button" href="https://science.gsfc.nasa.gov/sci/bio/thibault.a.lechien"
-          target="_blank">
+
+        <a class="linkedin-button" href="https://science.gsfc.nasa.gov/sci/bio/thibault.a.lechien" target="_blank">
           <img src="/assets/nasawhite2.png" alt="NASA Bio page">
         </a>
 
@@ -92,12 +107,12 @@
 
       <p></p>
 
-      
+
 
       <!-- CV button -->
       <p> <b><a href="/assets/CV.pdf" target="_blank">Download my CV</a></b></p>
 
-    
+
 
       <p></p>
       <p><a href="mailto:thibault.a.lechien@nasa.gov">thibault.a.lechien@nasa.gov</a></p>
