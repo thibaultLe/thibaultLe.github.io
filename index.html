@@ -1,148 +1,168 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Thibault Lechien</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Thibault Lechien</title>
 
-    <style>
-      /* Style for the LinkedIn button */
-      .linkedin-button {
-        display: inline-block;
-        background-color: #0077B5;
-        color: #fff;
-        text-decoration: none;
-        padding: 5px 5px;
-        border-radius: 5px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-      }
-  
-      .linkedin-button:hover {
-        background-color: #005082;
-      }
-      .linkedin-button:hover span {
-      color: #fff; /* Text color remains white on hover */
+  <link rel="stylesheet" href="stylesheets/styles.css">
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+  <meta name="viewport" content="width=device-width">
+
+  <style>
+    .button-container {
+      display: flex;
+      align-items: center;
     }
-    </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    /* Style for both buttons */
+    .linkedin-button,
+    .cv-button {
+      background-color: #0077B5;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 5px;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      margin-right: 10px;
+      /* Adjust the margin as needed */
+    }
 
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Thibault Lechien</h1>
-        <p>Research Assistant</p>
-        <p>SURA / NASA Goddard Space Flight Center</p>
-        <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo">
+    .linkedin-button:hover,
+    .cv-button:hover {
+      background-color: #005082;
+    }
 
-        
-        <p><a href="mailto:thibault.a.lechien@nasa.gov">thibault.a.lechien@nasa.gov</a></p>
+    .linkedin-button:hover span {
+      color: #fff;
+      /* Text color remains white on hover */
+    }
+  </style>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Thibault Lechien</h1>
+      <p>Research Assistant <br> SURA / NASA Goddard Space Flight Center</p>
+      <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo">
+
+
+      <!-- Container for buttons -->
+      <div class="button-container">
+        <!-- LinkedIn button with logo -->
         <a class="linkedin-button" href="https://www.linkedin.com/in/tlechien" target="_blank">
           <i class="fa fa-linkedin-square" style="font-size:32px;color:rgb(255, 255, 255)"></i>
         </a>
 
-        <p><a href="/assets/CV.pdf" target="_blank">CV</a></p>
+        <!-- CV button -->
+        <a class="cv-button" href="/assets/CV.pdf" target="_blank">CV</a>
+      </div>
 
-        
 
-        <ul>
-          <li><a href="https://github.com/orderedlist/minimal/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/orderedlist/minimal/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="http://github.com/orderedlist/minimal">Fork On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>AI for Astrophysics</h1>
+      <p><a href="mailto:thibault.a.lechien@nasa.gov">thibault.a.lechien@nasa.gov</a></p>
 
-        <p>I am a Research Assistant in the Astroparticle Physics Lab at NASA Goddard Space Flight Center, where I am currently doing research on neutron stars. In particular, we are inferencing neutron star parameters from NICER and Fermi light curves using neural networks.</p>
+      <ul>
+        <li><a href="https://github.com/orderedlist/minimal/zipball/master">Download <strong>ZIP File</strong></a></li>
+        <li><a href="https://github.com/orderedlist/minimal/tarball/master">Download <strong>TAR Ball</strong></a></li>
+        <li><a href="http://github.com/orderedlist/minimal">Fork On <strong>GitHub</strong></a></li>
+      </ul>
+    </header>
+    <section>
+      <h1>AI for Astrophysics</h1>
 
-        <h1>Site is very much a work in progress.</h1>
+      <p>I am a Research Assistant in the Astroparticle Physics Lab at NASA Goddard Space Flight Center, where I am
+        currently doing research on neutron stars. In particular, we are inferencing neutron star parameters from NICER
+        and Fermi light curves using neural networks.</p>
 
-        <h2>Math is hard</h2>
+      <h1>Site is very much a work in progress.</h1>
 
-        <p>In first grade I learned that 5 &gt; 3 and 2 &lt; 7. Maybe some arrows. 1 -&gt; 2 -&gt; 3. 9 &lt;- 8 &lt;- 7.</p>
+      <h2>Math is hard</h2>
 
-        <p>Triangles man! a^2 + b^2 = c^2</p>
+      <p>In first grade I learned that 5 &gt; 3 and 2 &lt; 7. Maybe some arrows. 1 -&gt; 2 -&gt; 3. 9 &lt;- 8 &lt;- 7.
+      </p>
 
-        <h2>We all like making lists</h2>
+      <p>Triangles man! a^2 + b^2 = c^2</p>
 
-        <p>The above header should be an H2 tag. Now, for a list of fruits:</p>
+      <h2>We all like making lists</h2>
 
-        <ul>
-          <li>Red Apples</li>
-          <li>Purple Grapes</li>
-          <li>Green Kiwifruits</li>
-        </ul>
+      <p>The above header should be an H2 tag. Now, for a list of fruits:</p>
 
-        <p>Let's get crazy:</p>
+      <ul>
+        <li>Red Apples</li>
+        <li>Purple Grapes</li>
+        <li>Green Kiwifruits</li>
+      </ul>
 
-        <ol>
-          <li>
-            <p>This is a list item with two paragraphs. Lorem ipsum dolor<br>
+      <p>Let's get crazy:</p>
+
+      <ol>
+        <li>
+          <p>This is a list item with two paragraphs. Lorem ipsum dolor<br>
             sit amet, consectetuer adipiscing elit. Aliquam hendrerit<br>
             mi posuere lectus.</p>
 
-            <p>Vestibulum enim wisi, viverra nec, fringilla in, laoreet<br>
+          <p>Vestibulum enim wisi, viverra nec, fringilla in, laoreet<br>
             vitae, risus. Donec sit amet nisl. Aliquam semper ipsum<br>
             sit amet velit.</p>
-          </li>
-          <li><p>Suspendisse id sem consectetuer libero luctus adipiscing.</p></li>
-        </ol>
+        </li>
+        <li>
+          <p>Suspendisse id sem consectetuer libero luctus adipiscing.</p>
+        </li>
+      </ol>
 
-        <p>What about some code <strong>in</strong> a list? That's insane, right?</p>
+      <p>What about some code <strong>in</strong> a list? That's insane, right?</p>
 
-        <ol>
-          <li>
-            <p>In Ruby you can map like this:</p>
+      <ol>
+        <li>
+          <p>In Ruby you can map like this:</p>
 
-            <pre><code>['a', 'b'].map { |x| x.uppercase }</code></pre>
-          </li>
-          <li>
-            <p>In Rails, you can do a shortcut:</p>
+          <pre><code>['a', 'b'].map { |x| x.uppercase }</code></pre>
+        </li>
+        <li>
+          <p>In Rails, you can do a shortcut:</p>
 
-            <pre><code>['a', 'b'].map(&amp;:uppercase)</code></pre>
-          </li>
-        </ol>
+          <pre><code>['a', 'b'].map(&amp;:uppercase)</code></pre>
+        </li>
+      </ol>
 
-        <p>Some people seem to like definition lists</p>
+      <p>Some people seem to like definition lists</p>
 
-        <dl>
-          <dt>Lower cost</dt>
-          <dd>The new version of this product costs significantly less than the previous one!</dd>
-          <dt>Easier to use</dt>
-          <dd>We've changed the product so that it's much easier to use!</dd>
-        </dl>
+      <dl>
+        <dt>Lower cost</dt>
+        <dd>The new version of this product costs significantly less than the previous one!</dd>
+        <dt>Easier to use</dt>
+        <dd>We've changed the product so that it's much easier to use!</dd>
+      </dl>
 
-        <h2>I am a robot</h2>
+      <h2>I am a robot</h2>
 
-        <p>Maybe you want to print <code>robot</code> to the console 1000 times. Why not?</p>
+      <p>Maybe you want to print <code>robot</code> to the console 1000 times. Why not?</p>
 
-        <pre><code>def robot_invasion
+      <pre><code>def robot_invasion
   puts("robot " * 1000)
 end
 </code></pre>
 
-        <p>You see, that was formatted as code because it's been indented by four spaces.</p>
+      <p>You see, that was formatted as code because it's been indented by four spaces.</p>
 
-        <p>How about we throw some angle braces and ampersands in there?</p>
+      <p>How about we throw some angle braces and ampersands in there?</p>
 
-        <pre><code>&lt;div class="footer"&gt;
+      <pre><code>&lt;div class="footer"&gt;
     &amp;copy; 2004 Foo Corporation
 &lt;/div&gt;
 </code></pre>
 
-        <h2>Set in stone</h2>
+      <h2>Set in stone</h2>
 
-        <p>Preformatted blocks are useful for ASCII art:</p>
+      <p>Preformatted blocks are useful for ASCII art:</p>
 
-        <pre>             ,-.
+      <pre>             ,-.
     ,     ,-.   ,-.
    / \   (   )-(   )
    \ |  ,.&gt;-(   )-&lt;
@@ -155,60 +175,63 @@ end
   ___|_____________
 </pre>
 
-        <h2>Playing the blame game</h2>
+      <h2>Playing the blame game</h2>
 
-        <p>If you need to blame someone, the best way to do so is by quoting them:</p>
+      <p>If you need to blame someone, the best way to do so is by quoting them:</p>
 
-        <blockquote>
+      <blockquote>
         <p>I, at any rate, am convinced that He does not throw dice.</p>
-        </blockquote>
+      </blockquote>
 
-        <p>Or perhaps someone a little less eloquent:</p>
+      <p>Or perhaps someone a little less eloquent:</p>
 
-        <blockquote>
+      <blockquote>
         <p>I wish you'd have given me this written question ahead of time so I<br>
-        could plan for it... I'm sure something will pop into my head here in<br>
-        the midst of this press conference, with all the pressure of trying to<br>
-        come up with answer, but it hadn't yet...</p>
+          could plan for it... I'm sure something will pop into my head here in<br>
+          the midst of this press conference, with all the pressure of trying to<br>
+          come up with answer, but it hadn't yet...</p>
 
         <p>I don't want to sound like<br>
-        I have made no mistakes. I'm confident I have. I just haven't - you<br>
-        just put me under the spot here, and maybe I'm not as quick on my feet<br>
-        as I should be in coming up with one.</p>
-        </blockquote>
+          I have made no mistakes. I'm confident I have. I just haven't - you<br>
+          just put me under the spot here, and maybe I'm not as quick on my feet<br>
+          as I should be in coming up with one.</p>
+      </blockquote>
 
-        <h2>Table for two</h2>
+      <h2>Table for two</h2>
 
-        <table>
-          <tbody>
-        <tr>
+      <table>
+        <tbody>
+          <tr>
             <th>ID</th>
-        <th>Name</th>
-        <th>Rank</th>
+            <th>Name</th>
+            <th>Rank</th>
           </tr>
           <tr>
             <td>1</td>
-        <td>Tom Preston-Werner</td>
-        <td>Awesome</td>
+            <td>Tom Preston-Werner</td>
+            <td>Awesome</td>
           </tr>
           <tr>
             <td>2</td>
-        <td>Albert Einstein</td>
-        <td>Nearly as awesome</td>
+            <td>Albert Einstein</td>
+            <td>Nearly as awesome</td>
           </tr>
         </tbody>
-        </table>
+      </table>
 
-        <h2>Crazy linking action</h2>
+      <h2>Crazy linking action</h2>
 
-        <p>I get 10 times more traffic from <a href="http://google.com/" title="Google">Google</a> than from<br>
-        <a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo</a> or <a href="http://search.msn.com/" title="MSN Search">MSN</a>.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="http://github.com/orderedlist">Steve Smith</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-  </body>
+      <p>I get 10 times more traffic from <a href="http://google.com/" title="Google">Google</a> than from<br>
+        <a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo</a> or <a href="http://search.msn.com/"
+          title="MSN Search">MSN</a>.
+      </p>
+    </section>
+    <footer>
+      <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
+      </p>
+    </footer>
+  </div>
+  <script src="javascripts/scale.fix.js"></script>
+</body>
+
 </html>
