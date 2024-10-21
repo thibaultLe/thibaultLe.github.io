@@ -105,6 +105,33 @@
   </style>
 
 
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .progress-container {
+            width: 80%;
+            background-color: #f3f3f3;
+            border-radius: 25px;
+            margin: auto;
+            padding: 3px;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar {
+            height: 30px;
+            width: 0%;
+            background-color: #4caf50;
+            border-radius: 25px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+
+
 
 </head>
 
@@ -112,7 +139,7 @@
   <div class="wrapper">
     <header>
       <h1>Thibault Lechien</h1>
-      <p>PhD Student ('24-'28) <br> Max Planck Institute for Astrophysics</p>
+      <p>PhD Student <br> Max Planck Institute for Astrophysics</p>
       <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo">
       <p></p>
 
@@ -181,6 +208,33 @@
           eliminating the need to make assumptions on the physical composition of the Dark Matter distribution. <a href="https://arxiv.org/pdf/2308.09170.pdf" title="https://arxiv.org/pdf/2308.09170.pdf">[arXiv:2308.09170]</a>. </li>
         <li>As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data. <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" title="https://scipost.org/SciPostPhys.13.4.097/pdf">[SciPostPhys.13.4.097]</a>. </li>
       </ul>
+
+      
+      <h2>PhD progress bar</h2>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
+
+      <script>
+        // PhD start date and duration in milliseconds (4 years)
+        const phdStartDate = new Date('2024-10-01');
+        const phdDuration = 4 * 365 * 24 * 60 * 60 * 1000; // 4 years in milliseconds
+    
+        // Function to update progress
+        function updateProgress() {
+            const today = new Date();
+            const elapsedTime = today - phdStartDate;
+            const progressPercentage = Math.min((elapsedTime / phdDuration) * 100, 100).toFixed(2);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.textContent = `${progressPercentage}%`;
+        }
+    
+        // Call the update function
+        updateProgress();
+    </script>
       
       
       
