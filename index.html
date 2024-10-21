@@ -102,20 +102,7 @@
     /*} 
     */
     -->
-  </style>
-
-
-  <style>
-    .progress {
-            height: 30px;
-            border-radius: 25px;
-            margin: 20px auto;
-            width: 80%;
-            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-  </style>
-
-  
+  </style> 
 
 
 
@@ -198,9 +185,8 @@
       
       <h2>PhD progress bar</h2>
       <div class="progress">
-        <div class="progress-bar progress-bar-striped bg-info" role="progressbar" id="progressBar" 
-             style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
+  <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+</div>  
 
       <script>
         // PhD start date and duration in milliseconds (4 years)
@@ -214,11 +200,9 @@
             const progressPercentage = Math.min((elapsedTime / phdDuration) * 100, 100).toFixed(2);
             
             // Update progress bar
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
+            const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = `${progressPercentage}%`;
             progressBar.setAttribute('aria-valuenow', progressPercentage); // Update aria attribute
-            progressText.textContent = `Progress: ${progressPercentage}%`;
         }
     
         // Call the update function
