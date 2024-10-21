@@ -106,28 +106,28 @@
 
 
   <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .progress-container {
+    .progress-container {
             width: 80%;
-            background-color: #f3f3f3;
+            background-color: #e0e0e0;
             border-radius: 25px;
             margin: auto;
-            padding: 3px;
-            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 5px;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
         }
         .progress-bar {
             height: 30px;
             width: 0%;
             background-color: #4caf50;
-            border-radius: 25px;
+            border-radius: 20px;
             text-align: center;
             line-height: 30px;
             color: white;
             font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            font-size: 16px;
+            margin-top: 10px;
         }
     </style>
 
@@ -214,6 +214,7 @@
       <div class="progress-container">
         <div class="progress-bar" id="progressBar">0%</div>
       </div>
+      <div class="progress-text" id="progressText">Progress: 0%</div>
 
       <script>
         // PhD start date and duration in milliseconds (4 years)
