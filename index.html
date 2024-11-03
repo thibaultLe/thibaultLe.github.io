@@ -40,7 +40,7 @@
         color: #fff;
         /* White text color in dark mode */
       }
-      
+
       section h2 {
         color: #fff;
         /* White text color in dark mode */
@@ -102,10 +102,10 @@
     background-color: #1f1f1f; /* Dark background color */
     /* background-image: url('assets/galaxytile.jpg'); /* Replace 'path/to/stars-image.jpg' with the actual path to your stars image */
     /* background-repeat: repeat; /* Repeat the background image */
-    /*} 
+    /*}
     */
 
-  </style> 
+  </style>
 
 
 
@@ -114,7 +114,7 @@
 <body>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
- 
+
   <div class="wrapper">
     <header>
       <h1>Thibault Lechien</h1>
@@ -165,20 +165,20 @@
     <section>
       <h1>AI for Astrophysics</h1>
 
-      <p> I am a PhD student at the <a href="https://www.mpa-garching.mpg.de/" title="Max Planck Institute for Astrophysics">Max Planck Institute for Astrophysics</a> working on Advancing stellar and binary evolution using machine learning with Prof. Selma de Mink. 
+      <p> I am a PhD student at the <a href="https://www.mpa-garching.mpg.de/" title="Max Planck Institute for Astrophysics">Max Planck Institute for Astrophysics</a> working on Advancing stellar and binary evolution using machine learning with Prof. Selma de Mink.
         I was previously a Research Assistant in the <a href="https://science.gsfc.nasa.gov/astrophysics/astroparticles/" title="Astroparticle Physics Lab">Astroparticle Physics Lab</a> and
         the <a href="https://science.gsfc.nasa.gov/astrophysics/gravity/" title="Gravitational Astrophysics Lab">Gravitational Astrophysics Lab</a>
-        at <a href="https://www.nasa.gov/goddard/" title="NASA Goddard">NASA Goddard Space Flight Center</a>. 
+        at <a href="https://www.nasa.gov/goddard/" title="NASA Goddard">NASA Goddard Space Flight Center</a>.
         I have an MSc. in Computer Science from KU Leuven and research experience in applying AI to astrophysics in numerous projects at NASA and ESA.</p>
 
 
-      
+
       <h2>Research interests</h2>
-      <p>My current research interests involve solving interesting inverse problems in astrophysics. 
-      Coming from a computational science background, I see a huge potential for AI methods to be applied to these problems. 
+      <p>My current research interests involve solving interesting inverse problems in astrophysics.
+      Coming from a computational science background, I see a huge potential for AI methods to be applied to these problems.
       Traditional (non-AI) methods are often too inefficient, cannot handle large datasets or suffer from analytic degeneracies.
       With the incoming wave of data from the current and future astronomical campaigns, astrophysics needs new methodologies.  </p>
-      
+
       <h2>Past projects</h2>
       <ul>
         <li>At NASA Goddard Space Flight Center, I did research on neutron star X-ray and Gamma-ray emission. In particular, we inferred neutron star parameters from <a href="https://science.nasa.gov/mission/nicer/" title="NICER">NICER</a>
@@ -188,41 +188,48 @@
         <li>As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data. <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" title="https://scipost.org/SciPostPhys.13.4.097/pdf">[SciPostPhys.13.4.097]</a>. </li>
       </ul>
 
-      
+
       <h2>PhD progress bar</h2>
       <div class="progress" role="progressbar" aria-label="Info striped example" aria-valuenow="3" aria-valuemin="0" aria-valuemax="100">
-             <div class="progress-bar progress-bar-striped bg-info" style="width: 3%">
-
+        <div class="progress-bar progress-bar-striped bg-info" id="progressBar" style="width: 3%">
           <div class="progress-text" id="progressText">2%</div>
-             </div>
+        </div>
       </div>
 
       <script>
         // PhD start date and duration in milliseconds (4 years)
         const phdStartDate = new Date('2024-10-01');
-        const phdDuration = 4 * 365 * 24 * 60 * 60 * 1000; // 4 years in milliseconds
-    
+        const phdEndDate = new Date('2028-10-01');
+
         // Function to update progress
         function updateProgress() {
-            const today = new Date();
-            const elapsedTime = today - phdStartDate;
-            const progressPercentage = Math.min((elapsedTime / phdDuration) * 100, 100).toFixed(2);
-            
-            // Update progress bar
-            const progressBar = document.getElementById('progressBar');
+            const now = new Date();
+            const totalDuration = phdEndDate - phdStartDate;
+            const elapsed = now - phdStartDate;
+
+            // Calculate progress percentage
+            let progressPercentage = (elapsed / totalDuration) * 100;
+
+            // Ensure percentage stays between 0 and 100
+            progressPercentage = Math.max(0, Math.min(100, progressPercentage));
+            progressPercentage = progressPercentage.toFixed(2);
+
+            // Update progress bar width and text
+            const progressBar = document.querySelector('.progress-bar');
             const progressText = document.getElementById('progressText');
+
             progressBar.style.width = `${progressPercentage}%`;
-            progressBar.setAttribute('aria-valuenow', progressPercentage); // Update aria attribute
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
             progressText.textContent = `${progressPercentage}%`;
-            
         }
-    
-        // Call the update function
+
+        // Update progress immediately and then every hour
         updateProgress();
+        setInterval(updateProgress, 3600000); // Update every hour (3600000 ms)
     </script>
-      
-      
-      
+
+
+
     </section>
     <footer>
       <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
