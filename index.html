@@ -105,6 +105,40 @@
     /*}
     */
 
+    /* Add global font size reduction */
+    body {
+      font-size: 14px;  /* Reduced from default 16px */
+    }
+
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.5em; }
+
+    /* Progress bar styling */
+    .progress {
+      height: 25px;  /* Make progress bar slightly taller */
+      position: relative;  /* Required for absolute positioning of text */
+    }
+
+    .progress-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      line-height: 25px;  /* Match height of progress bar */
+      color: #000;  /* Dark text color */
+      mix-blend-mode: difference;  /* This will make text visible on both light and dark backgrounds */
+    }
+
+    /* Dark mode adjustments */
+    @media (prefers-color-scheme: dark) {
+      body {
+        font-size: 14px;  /* Ensure font size is consistent in dark mode */
+      }
+
+      .progress-text {
+        color: #fff;  /* Light text color for dark mode */
+      }
+    }
+
   </style>
 
 
@@ -165,7 +199,7 @@
     <section>
       <h1>AI for Astrophysics</h1>
 
-      <p> I am a PhD student at the <a href="https://www.mpa-garching.mpg.de/" title="Max Planck Institute for Astrophysics">Max Planck Institute for Astrophysics</a> working on Advancing stellar and binary evolution using machine learning with Prof. Selma de Mink.
+      <p> I am a PhD student at the <a href="https://www.mpa-garching.mpg.de/" title="Max Planck Institute for Astrophysics">Max Planck Institute for Astrophysics</a> working on "Advancing stellar and binary evolution using machine learning" with Prof. Selma de Mink.
         I was previously a Research Assistant in the <a href="https://science.gsfc.nasa.gov/astrophysics/astroparticles/" title="Astroparticle Physics Lab">Astroparticle Physics Lab</a> and
         the <a href="https://science.gsfc.nasa.gov/astrophysics/gravity/" title="Gravitational Astrophysics Lab">Gravitational Astrophysics Lab</a>
         at <a href="https://www.nasa.gov/goddard/" title="NASA Goddard">NASA Goddard Space Flight Center</a>.
