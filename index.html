@@ -241,12 +241,12 @@
             const totalDuration = phdEndDate - phdStartDate;
             const elapsed = now - phdStartDate;
 
-            // Calculate progress percentage
+            // Calculate progress percentage with more decimal places
             let progressPercentage = (elapsed / totalDuration) * 100;
 
             // Ensure percentage stays between 0 and 100
             progressPercentage = Math.max(0, Math.min(100, progressPercentage));
-            progressPercentage = progressPercentage.toFixed(2);
+            progressPercentage = progressPercentage.toFixed(6); // Increased decimal places
 
             // Update progress bar width and text
             const progressBar = document.querySelector('.progress-bar');
@@ -257,9 +257,9 @@
             progressText.textContent = `${progressPercentage}%`;
         }
 
-        // Update progress immediately and then every hour
+        // Update progress immediately and then every 100ms
         updateProgress();
-        setInterval(updateProgress, 3600000); // Update every hour (3600000 ms)
+        setInterval(updateProgress, 100); // Update 10 times per second
     </script>
 
 
