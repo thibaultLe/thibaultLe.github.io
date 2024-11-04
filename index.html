@@ -235,31 +235,37 @@
         const phdStartDate = new Date('2024-10-01');
         const phdEndDate = new Date('2028-10-01');
 
+        // Cache DOM elements
+        const progressBar = document.querySelector('.progress-bar');
+        const progressText = document.getElementById('progressText');
+
         // Function to update progress
         function updateProgress() {
             const now = new Date();
             const totalDuration = phdEndDate - phdStartDate;
             const elapsed = now - phdStartDate;
 
-            // Calculate progress percentage with more decimal places
+            // Calculate progress percentage
             let progressPercentage = (elapsed / totalDuration) * 100;
-
-            // Ensure percentage stays between 0 and 100
             progressPercentage = Math.max(0, Math.min(100, progressPercentage));
-            progressPercentage = progressPercentage.toFixed(8); // Increased decimal places
 
-            // Update progress bar width and text
-            const progressBar = document.querySelector('.progress-bar');
-            const progressText = document.getElementById('progressText');
-
-            progressBar.style.width = `${progressPercentage}%`;
-            progressBar.setAttribute('aria-valuenow', progressPercentage);
-            progressText.textContent = `${progressPercentage}%`;
+            // Only update DOM if value has changed significantly (>0.000001)
+            const formattedProgress = progressPercentage.toFixed(8);
+            if (progressText.textContent !== `${formattedProgress}%`) {
+                progressBar.style.width = `${progressPercentage}%`;
+                progressBar.setAttribute('aria-valuenow', progressPercentage);
+                progressText.textContent = `${formattedProgress}%`;
+            }
         }
 
-        // Update progress immediately and then every 100ms
-        updateProgress();
-        setInterval(updateProgress, 100); // Update 10 times per second
+        // Use requestAnimationFrame for smoother updates
+        function animate() {
+            updateProgress();
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation
+        animate();
     </script>
 
 
