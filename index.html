@@ -322,31 +322,38 @@
   <script src="javascripts/scale.fix.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const toggleSwitch = document.querySelector('#checkbox');
+      const toggle = document.querySelector('.tdnn');
+      const moon = document.querySelector('.moon');
 
       // Function to switch theme
-      function switchTheme(e) {
-        if (e.target.checked) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-          localStorage.setItem('theme', 'light');
-        }
+      function switchTheme() {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          if (!isDark) {
+              document.documentElement.setAttribute('data-theme', 'dark');
+              localStorage.setItem('theme', 'dark');
+              moon.classList.add('sun');
+              toggle.classList.add('day');
+          } else {
+              document.documentElement.setAttribute('data-theme', 'light');
+              localStorage.setItem('theme', 'light');
+              moon.classList.remove('sun');
+              toggle.classList.remove('day');
+          }
       }
 
       // Event listener
-      toggleSwitch.addEventListener('change', switchTheme, false);
+      toggle.addEventListener('click', switchTheme);
 
       // Check for saved theme preference
       const currentTheme = localStorage.getItem('theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
       if (currentTheme) {
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        if (currentTheme === 'dark') {
-          toggleSwitch.checked = true;
-        }
+          document.documentElement.setAttribute('data-theme', currentTheme);
+          if (currentTheme === 'dark') {
+              moon.classList.add('sun');
+              toggle.classList.add('day');
+          }
       }
     });
   </script>
