@@ -186,12 +186,13 @@
       text-align: center;
       left: 0;
       right: 0;
-      color: #000;  /* Default color for light mode */
+      color: #000;  /* Always dark text */
     }
 
-    [data-theme="dark"] .progress-text {
-      color: #fff;  /* Text color for dark mode */
-    }
+    /* Remove or comment out this rule since we want the text to stay dark */
+    /*[data-theme="dark"] .progress-text {
+      color: #fff;
+    }*/
 
   </style>
 
