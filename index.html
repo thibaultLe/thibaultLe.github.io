@@ -110,6 +110,24 @@
       color: #1f1f1f;  /* Sun icon color */
     }
 
+    /* Sun and moon icon specific styles */
+    .sun-and-moon > .sun {
+      transform-origin: center center;
+    }
+
+    .sun-and-moon > .sun-beams {
+      transform-origin: center center;
+      stroke-width: 2px;
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun {
+      transform: scale(1.75);
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun-beams {
+      opacity: 0;
+    }
+
     /* Add or update the button container styles */
     .button-container {
       display: flex;
@@ -167,8 +185,8 @@
       font-size: 16px;  /* Increased from 14px */
     }
 
-    /* Make links lighter blue in dark mode */
-    [data-theme="dark"] section a {
+    /* Make all links lighter blue in dark mode */
+    [data-theme="dark"] a {
       color: #63c0f5;  /* Lighter blue color for better visibility in dark mode */
     }
 
