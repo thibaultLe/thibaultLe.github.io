@@ -139,6 +139,75 @@
       }
     }
 
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .sun-and-moon {
+      transition: transform 0.5s;
+    }
+
+    .sun-and-moon > .sun {
+      transform-origin: center center;
+    }
+
+    .sun-and-moon > .sun-beams {
+      transform-origin: center center;
+    }
+
+    [data-theme="dark"] .sun-and-moon {
+      transform: rotate(180deg);
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun {
+      transform: scale(1.75);
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun-beams {
+      opacity: 0;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      color: white;
+    }
+
+    [data-theme="dark"] .theme-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="dark"] {
+      /* Your existing dark mode styles */
+      body {
+        background-color: #1f1f1f;
+        color: #fff;
+      }
+      header h1,
+      header p,
+      section h1,
+      section h2,
+      section p {
+        color: #fff;
+      }
+      /* ... rest of your dark mode styles ... */
+    }
+
   </style>
 
 
@@ -148,6 +217,27 @@
 <body>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Add this button -->
+  <button id="theme-toggle" class="theme-toggle">
+    <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+      <mask class="moon" id="moon-mask">
+        <rect x="0" y="0" width="100%" height="100%" fill="white" />
+        <circle cx="24" cy="10" r="6" fill="black" />
+      </mask>
+      <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+      <g class="sun-beams" stroke="currentColor">
+        <line x1="12" y1="1" x2="12" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" />
+        <line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      </g>
+    </svg>
+  </button>
 
   <div class="wrapper">
     <header>
@@ -218,8 +308,9 @@
         <li>At NASA Goddard Space Flight Center, I did research on neutron star X-ray and Gamma-ray emission. In particular, we inferred neutron star parameters from <a href="https://science.nasa.gov/mission/nicer/" title="NICER">NICER</a>
           and <a href="https://fermi.gsfc.nasa.gov/" title="Fermi">Fermi</a> data using neural networks emulators, speeding up simulations by 7 orders of magnitude at a minimal loss in accuracy. I am also a member of the Fermi LAT Collaboration. </li>
         <li>At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre,
-          eliminating the need to make assumptions on the physical composition of the Dark Matter distribution. <a href="https://arxiv.org/pdf/2308.09170.pdf" title="https://arxiv.org/pdf/2308.09170.pdf">[arXiv:2308.09170]</a>. </li>
-        <li>As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data. <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" title="https://scipost.org/SciPostPhys.13.4.097/pdf">[SciPostPhys.13.4.097]</a>. </li>
+          eliminating the need to make assumptions on the physical composition of the Dark Matter distribution
+          <a href="https://doi.org/10.1051/0004-6361/202347738" title="https://arxiv.org/pdf/2308.09170.pdf">[doi.org/10.1051/0004-6361/202347738]</a>. </li>
+        <li>As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" title="https://scipost.org/SciPostPhys.13.4.097/pdf">[SciPostPhys.13.4.097]</a>. </li>
       </ul>
 
 
@@ -277,6 +368,28 @@
     </footer>
   </div>
   <script src="javascripts/scale.fix.js"></script>
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+
+    // Check for saved theme preference, otherwise use system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', systemTheme);
+    }
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+  </script>
 </body>
 
 </html>
