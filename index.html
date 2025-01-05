@@ -61,7 +61,7 @@
     }
 
     .slider {
-      background-color: #ccc;
+      background-color: #1f1f1f;  /* Dark background when in light mode */
       bottom: 0;
       cursor: pointer;
       left: 0;
@@ -84,14 +84,7 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
-      background-color: #66bb6a;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-
+    /* Light mode (unchecked) */
     .slider .sun-and-moon {
       position: absolute;
       width: 20px;
@@ -99,11 +92,22 @@
       left: 7px;
       top: 7px;
       transition: .4s;
-      color: #fff;
+      color: #fff;  /* Moon icon color */
+    }
+
+    /* Dark mode (checked) */
+    input:checked + .slider {
+      background-color: #fff;  /* Light background when in dark mode */
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+      background-color: #1f1f1f;  /* Dark circle when in dark mode */
     }
 
     input:checked + .slider .sun-and-moon {
       transform: translateX(26px) rotate(180deg);
+      color: #1f1f1f;  /* Sun icon color */
     }
 
     /* Add or update the button container styles */
@@ -120,42 +124,52 @@
     }
 
     .linkedin-button img {
-      width: 48px;  /* Doubled from 24px */
-      height: 48px; /* Doubled from 24px */
+      width: 48px;
+      height: 48px;
       object-fit: contain;
       filter: brightness(0);  /* Makes images black in light mode */
     }
 
-    /* Make icons white in dark mode */
-    [data-theme="dark"] .linkedin-button img {
-      filter: brightness(100);  /* Makes images white in dark mode */
+    /* Exclude ORCID from color filtering */
+    .linkedin-button img[alt="Orcid ID"] {
+      filter: none !important;
+    }
+
+    /* Make other icons white in dark mode, but still exclude ORCID */
+    [data-theme="dark"] .linkedin-button img:not([alt="Orcid ID"]) {
+      filter: brightness(100);
     }
 
     /* Update font sizes */
     header h1 {
-      font-size: 24px;  /* Reduced from default */
+      font-size: 28px;  /* Increased from 24px */
       margin-bottom: 10px;
     }
 
     header p {
-      font-size: 16px;  /* Reduced from default */
+      font-size: 18px;  /* Increased from 16px */
     }
 
     section h1 {
-      font-size: 22px;  /* Reduced from default */
+      font-size: 24px;  /* Increased from 22px */
     }
 
     section h2 {
-      font-size: 18px;  /* Reduced from default */
+      font-size: 20px;  /* Increased from 18px */
     }
 
     section p, section li {
-      font-size: 14px;  /* Reduced from default */
+      font-size: 16px;  /* Increased from 14px */
     }
 
     /* Adjust link size in header */
     header a {
-      font-size: 14px;
+      font-size: 16px;  /* Increased from 14px */
+    }
+
+    /* Make links lighter blue in dark mode */
+    [data-theme="dark"] section a {
+      color: #63c0f5;  /* Lighter blue color for better visibility in dark mode */
     }
 
   </style>
