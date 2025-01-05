@@ -120,9 +120,42 @@
     }
 
     .linkedin-button img {
-      width: 24px;  /* Adjust this value to your preferred size */
-      height: 24px; /* Keep it square */
+      width: 48px;  /* Doubled from 24px */
+      height: 48px; /* Doubled from 24px */
       object-fit: contain;
+      filter: brightness(0);  /* Makes images black in light mode */
+    }
+
+    /* Make icons white in dark mode */
+    [data-theme="dark"] .linkedin-button img {
+      filter: brightness(100);  /* Makes images white in dark mode */
+    }
+
+    /* Update font sizes */
+    header h1 {
+      font-size: 24px;  /* Reduced from default */
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 16px;  /* Reduced from default */
+    }
+
+    section h1 {
+      font-size: 22px;  /* Reduced from default */
+    }
+
+    section h2 {
+      font-size: 18px;  /* Reduced from default */
+    }
+
+    section p, section li {
+      font-size: 14px;  /* Reduced from default */
+    }
+
+    /* Adjust link size in header */
+    header a {
+      font-size: 14px;
     }
 
   </style>
