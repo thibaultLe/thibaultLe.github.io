@@ -175,6 +175,24 @@
       color: #63c0f5;  /* Lighter blue color for better visibility in dark mode */
     }
 
+    /* Progress bar styles */
+    .progress {
+      position: relative;
+    }
+
+    .progress-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      left: 0;
+      right: 0;
+      color: #000;  /* Default color for light mode */
+    }
+
+    [data-theme="dark"] .progress-text {
+      color: #fff;  /* Text color for dark mode */
+    }
+
   </style>
 
 
