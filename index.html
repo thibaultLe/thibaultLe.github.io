@@ -139,118 +139,78 @@
       }
     }
 
-    .theme-toggle {
+    .theme-switch-wrapper {
       position: fixed;
       top: 1rem;
       right: 1rem;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 50%;
-      background: transparent;
-      cursor: pointer;
-      width: 3rem;
-      height: 3rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      transition: background-color 0.3s;
+      z-index: 100;
     }
 
-    .theme-toggle:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+    .theme-switch {
+      display: inline-block;
+      height: 34px;
+      position: relative;
+      width: 60px;
     }
 
-    .sun-and-moon {
-      transition: transform 0.5s;
+    .theme-switch input {
+      display: none;
     }
 
-    .sun-and-moon > .sun {
-      transform-origin: center center;
+    .slider {
+      background-color: #ccc;
+      bottom: 0;
+      cursor: pointer;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: .4s;
+      border-radius: 34px;
     }
 
-    .sun-and-moon > .sun-beams {
-      transform-origin: center center;
+    .slider:before {
+      background-color: #fff;
+      bottom: 4px;
+      content: "";
+      height: 26px;
+      left: 4px;
+      position: absolute;
+      transition: .4s;
+      width: 26px;
+      border-radius: 50%;
     }
 
-    [data-theme="dark"] .sun-and-moon {
-      transform: rotate(180deg);
+    input:checked + .slider {
+      background-color: #66bb6a;
     }
 
-    [data-theme="dark"] .sun-and-moon > .sun {
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .slider .sun-and-moon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 7px;
+      top: 7px;
+      transition: .4s;
+      color: #fff;
+    }
+
+    input:checked + .slider .sun-and-moon {
+      transform: translateX(26px) rotate(180deg);
+    }
+
+    [data-theme="dark"] .slider .sun-and-moon > .sun {
       transform: scale(1.75);
     }
 
-    [data-theme="dark"] .sun-and-moon > .sun-beams {
+    [data-theme="dark"] .slider .sun-and-moon > .sun-beams {
       opacity: 0;
-    }
-
-    [data-theme="dark"] .theme-toggle {
-      color: white;
-    }
-
-    [data-theme="dark"] .theme-toggle:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    [data-theme="dark"] {
-      /* Your existing dark mode styles */
-      body {
-        background-color: #1f1f1f;
-        color: #fff;
-      }
-      header h1 {
-        color: #fff;
-      }
-      header p {
-        color: #fff;
-      }
-      section h1 {
-        color: #fff;
-      }
-      section h2 {
-        color: #fff;
-      }
-      section p {
-        color: #fff;
-      }
-      section a {
-        color: #63c0f5;
-      }
-      .button-container {
-        background-color: #1f1f1f;
-      }
-      .progress-text {
-        color: #fff;
-      }
-    }
-
-    /* Add light theme styles for completeness */
-    [data-theme="light"] {
-      body {
-        background-color: #fff;
-        color: #000;
-      }
-      header h1 {
-        color: #000;
-      }
-      header p {
-        color: #000;
-      }
-      section h1 {
-        color: #000;
-      }
-      section h2 {
-        color: #000;
-      }
-      section p {
-        color: #000;
-      }
-      .button-container {
-        background-color: #fff;
-      }
-      .progress-text {
-        color: #000;
-      }
     }
 
   </style>
@@ -263,26 +223,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-  <!-- Add this button -->
-  <button id="theme-toggle" class="theme-toggle">
-    <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-      <mask class="moon" id="moon-mask">
-        <rect x="0" y="0" width="100%" height="100%" fill="white" />
-        <circle cx="24" cy="10" r="6" fill="black" />
-      </mask>
-      <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
-      <g class="sun-beams" stroke="currentColor">
-        <line x1="12" y1="1" x2="12" y2="3" />
-        <line x1="12" y1="21" x2="12" y2="23" />
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-        <line x1="1" y1="12" x2="3" y2="12" />
-        <line x1="21" y1="12" x2="23" y2="12" />
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-      </g>
-    </svg>
-  </button>
+  <!-- Replace the existing button with this -->
+  <div class="theme-switch-wrapper">
+    <label class="theme-switch" for="checkbox">
+      <input type="checkbox" id="checkbox" />
+      <div class="slider round">
+        <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+          <mask class="moon" id="moon-mask">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <circle cx="24" cy="10" r="6" fill="black" />
+          </mask>
+          <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+          <g class="sun-beams" stroke="currentColor">
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </g>
+        </svg>
+      </div>
+    </label>
+  </div>
 
   <div class="wrapper">
     <header>
@@ -414,23 +379,27 @@
   </div>
   <script src="javascripts/scale.fix.js"></script>
   <script>
-    // Theme toggle functionality
-    const themeToggle = document.getElementById('theme-toggle');
+    // Update the theme toggle JavaScript
+    const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
 
     // Check for saved theme preference, otherwise use system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        toggleSwitch.checked = true;
+      }
     } else {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', systemTheme);
+      if (systemTheme === 'dark') {
+        toggleSwitch.checked = true;
+      }
     }
 
-    // Toggle theme on button click
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
+    // Toggle theme on switch change
+    toggleSwitch.addEventListener('change', function(e) {
+      const newTheme = e.target.checked ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
     });
