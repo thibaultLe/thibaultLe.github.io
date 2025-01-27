@@ -359,13 +359,13 @@
           if (!isDark) {
               document.documentElement.setAttribute('data-theme', 'dark');
               localStorage.setItem('theme', 'dark');
-              moon.classList.add('sun');
-              toggle.classList.add('day');
+              moon.classList.remove('sun');
+              toggle.classList.remove('day');
           } else {
               document.documentElement.setAttribute('data-theme', 'light');
               localStorage.setItem('theme', 'light');
-              moon.classList.remove('sun');
-              toggle.classList.remove('day');
+              moon.classList.add('sun');
+              toggle.classList.add('day');
           }
       }
 
@@ -379,6 +379,9 @@
       if (currentTheme) {
           document.documentElement.setAttribute('data-theme', currentTheme);
           if (currentTheme === 'dark') {
+              moon.classList.remove('sun');
+              toggle.classList.remove('day');
+          } else {
               moon.classList.add('sun');
               toggle.classList.add('day');
           }
