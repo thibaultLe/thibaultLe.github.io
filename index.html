@@ -185,12 +185,12 @@
       text-decoration: underline;
     }
 
-    /* Make tooltips appear faster */
-    [title] {
+    /* Make tooltips appear faster - only for social media buttons */
+    .linkedin-button[title] {
       position: relative;
     }
 
-    [title]:hover::after {
+    .linkedin-button[title]:hover::after {
       content: attr(title);
       position: absolute;
       bottom: 100%;
