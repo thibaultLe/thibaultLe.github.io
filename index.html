@@ -175,6 +175,16 @@
       color: #63c0f5;  /* Lighter blue color for better visibility in dark mode */
     }
 
+    /* Remove default underlines from all links */
+    a {
+      text-decoration: none;
+    }
+
+    /* Add underline only on hover */
+    a:hover {
+      text-decoration: underline;
+    }
+
     /* Progress bar styles */
     .progress {
       position: relative;
@@ -221,24 +231,24 @@
       <!-- Container for buttons -->
       <div class="button-container">
 
-        <a class="linkedin-button" href="https://www.linkedin.com/in/tlechien" target="_blank">
+        <a class="linkedin-button" href="https://www.linkedin.com/in/tlechien" target="_blank" title="LinkedIn">
           <img src="/assets/linkedinwhite.png" alt="Linkedin">
 
         </a>
 
 
-        <a class="linkedin-button" href="https://www.researchgate.net/profile/Thibault-Lechien-2" target="_blank">
+        <a class="linkedin-button" href="https://www.researchgate.net/profile/Thibault-Lechien-2" target="_blank" title="ResearchGate">
           <img src="/assets/RGlogowhite.png" alt="ResearchGate">
 
         </a>
 
         <a class="linkedin-button" href="https://scholar.google.be/citations?user=ohWNXuEAAAAJ&hl=en&oi=ao"
-          target="_blank">
+          target="_blank" title="Google Scholar">
           <img src="/assets/Gscholarblackwhite.png" alt="Google Scholar">
         </a>
 
         <a class="linkedin-button" href="https://orcid.org/0000-0001-6284-2842"
-          target="_blank">
+          target="_blank" title="ORCID profile">
           <img src="/assets/orcid.logo.icon.svg" alt="Orcid ID">
         </a>
 
@@ -249,7 +259,7 @@
 
 
       <!-- CV button -->
-      <p> <b><a href="/assets/CV.pdf" target="_blank">Download my CV</a></b></p>
+      <p> <b><a href="/assets/CV.pdf" target="_blank">View my CV</a></b></p>
 
 
 
