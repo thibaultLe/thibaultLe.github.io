@@ -429,24 +429,31 @@
             this.spawnTimer = 0;
             this.spawnRate = 2000;
             this.scrollLocked = false;
+            this.stars = [];
+            this.maxStars = 3;
+            this.hasMoved = false;
+            this.instructionPopup = null;
 
             this.setupRocket();
             this.setupControls();
+            this.setupInstructionPopup();
+            this.setupScoreDisplay();
             this.spawnEnemies();
+            this.spawnStars();
             this.gameLoop();
           }
 
           setupRocket() {
-            // Create rocket element with triangular shape
+            // Create bigger rocket element with triangular shape
             this.rocket = document.createElement('div');
             this.rocket.id = 'rocketShip';
             this.rocket.style.cssText = `
               position: fixed;
               width: 0;
               height: 0;
-              border-left: 20px solid #4ecdc4;
-              border-top: 10px solid transparent;
-              border-bottom: 10px solid transparent;
+              border-left: 40px solid #4ecdc4;
+              border-top: 20px solid transparent;
+              border-bottom: 20px solid transparent;
               z-index: 10000;
               transform-origin: center;
               filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
@@ -454,11 +461,82 @@
 
             // Add rocket window
             this.rocket.innerHTML = `
-              <div style="position: absolute; top: -4px; left: -15px; width: 6px; height: 6px; background: #3498db; border-radius: 50%; border: 1px solid #2980b9;"></div>
+              <div style="position: absolute; top: -8px; left: -30px; width: 12px; height: 12px; background: #3498db; border-radius: 50%; border: 2px solid #2980b9;"></div>
             `;
 
             document.body.appendChild(this.rocket);
             this.updateRocketPosition();
+          }
+
+          setupInstructionPopup() {
+            this.instructionPopup = document.createElement('div');
+            this.instructionPopup.style.cssText = `
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: rgba(0, 0, 0, 0.9);
+              color: white;
+              padding: 20px 30px;
+              border-radius: 15px;
+              font-size: 18px;
+              font-family: Arial, sans-serif;
+              text-align: center;
+              z-index: 10001;
+              border: 2px solid #4ecdc4;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+              animation: pulse 2s infinite;
+            `;
+
+            this.instructionPopup.innerHTML = `
+              <div style="margin-bottom: 15px;">🚀</div>
+              <div style="font-weight: bold; margin-bottom: 10px;">Welcome to Rocket Ship!</div>
+              <div>Use <strong>Arrow Keys</strong> to steer</div>
+              <div style="font-size: 14px; margin-top: 10px; opacity: 0.8;">Start moving to begin!</div>
+            `;
+
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes pulse {
+                0%, 100% { transform: translate(-50%, -50%) scale(1); }
+                50% { transform: translate(-50%, -50%) scale(1.05); }
+              }
+            `;
+            document.head.appendChild(style);
+
+            document.body.appendChild(this.instructionPopup);
+          }
+
+          setupScoreDisplay() {
+            this.scoreDisplay = document.createElement('div');
+            this.scoreDisplay.style.cssText = `
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background: rgba(0, 0, 0, 0.8);
+              color: white;
+              padding: 15px 20px;
+              border-radius: 10px;
+              font-size: 18px;
+              font-family: Arial, sans-serif;
+              font-weight: bold;
+              z-index: 10001;
+              border: 2px solid #4ecdc4;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+
+            this.updateScoreDisplay();
+            document.body.appendChild(this.scoreDisplay);
+          }
+
+          updateScoreDisplay() {
+            this.scoreDisplay.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">⭐</span>
+                <span>Score: ${this.score}</span>
+              </div>
+            `;
           }
 
           setupControls() {
@@ -502,7 +580,57 @@
             window.scrollTo(this.scrollX, this.scrollY);
           }
 
+          spawnStars() {
+            for (let i = 0; i < this.maxStars; i++) {
+              this.spawnStar();
+            }
+          }
+
+          spawnStar() {
+            const star = document.createElement('div');
+            star.style.cssText = `
+              position: fixed;
+              width: 30px;
+              height: 30px;
+              background: radial-gradient(circle, #ffd700, #ffed4e);
+              border: 2px solid #ffb347;
+              border-radius: 50%;
+              z-index: 9996;
+              box-shadow: 0 0 20px #ffd700;
+              animation: twinkle 1.5s infinite alternate;
+            `;
+
+            // Add twinkle animation
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes twinkle {
+                0% { opacity: 0.7; transform: scale(1); }
+                100% { opacity: 1; transform: scale(1.1); }
+              }
+            `;
+            document.head.appendChild(style);
+
+            // Random position
+            const x = Math.random() * (window.innerWidth - 60) + 30;
+            const y = Math.random() * (window.innerHeight - 60) + 30;
+
+            star.style.left = x + 'px';
+            star.style.top = y + 'px';
+            document.body.appendChild(star);
+
+            this.stars.push({ x, y, element: star });
+          }
+
           update() {
+            // Check if ship has moved
+            if ((this.keys['ArrowLeft'] || this.keys['ArrowRight'] || this.keys['ArrowUp']) && !this.hasMoved) {
+              this.hasMoved = true;
+              if (this.instructionPopup) {
+                this.instructionPopup.remove();
+                this.instructionPopup = null;
+              }
+            }
+
             // Rotation
             if (this.keys['ArrowLeft']) this.rotation -= this.rotationSpeed;
             if (this.keys['ArrowRight']) this.rotation += this.rotationSpeed;
@@ -591,8 +719,26 @@
                   this.enemies.splice(index, 1);
                   bullet.element.remove();
                   this.bullets.splice(bulletIndex, 1);
+                  this.updateScoreDisplay();
                 }
               });
+            });
+
+            // Check star collisions
+            this.stars.forEach((star, index) => {
+              const dx = this.x - star.x;
+              const dy = this.y - star.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              if (distance < 35) {
+                // Collect star
+                this.score += 50;
+                star.element.remove();
+                this.stars.splice(index, 1);
+                this.updateScoreDisplay();
+
+                // Spawn new star
+                this.spawnStar();
+              }
             });
 
             // Spawn new enemies
@@ -606,8 +752,8 @@
           }
 
           updateRocketPosition() {
-            this.rocket.style.left = (this.x - 10) + 'px';
-            this.rocket.style.top = (this.y - 10) + 'px';
+            this.rocket.style.left = (this.x - 20) + 'px';
+            this.rocket.style.top = (this.y - 20) + 'px';
             this.rocket.style.transform = `rotate(${this.rotation}rad)`;
           }
 
@@ -624,8 +770,8 @@
             `;
 
             const bulletObj = {
-              x: this.x + Math.cos(this.rotation) * 30,
-              y: this.y + Math.sin(this.rotation) * 30,
+              x: this.x + Math.cos(this.rotation) * 50,
+              y: this.y + Math.sin(this.rotation) * 50,
               vx: Math.cos(this.rotation) * 10,
               vy: Math.sin(this.rotation) * 10,
               life: 60,
@@ -651,10 +797,10 @@
             `;
 
             const particleObj = {
-              x: this.x - Math.cos(this.rotation) * 25,
-              y: this.y - Math.sin(this.rotation) * 25,
+              x: this.x - Math.cos(this.rotation) * 40,
+              y: this.y - Math.sin(this.rotation) * 40,
               vx: -Math.cos(this.rotation) * 3 - (Math.random() - 0.5) * 3,
-              vy: -Math.sin(this.rotation) * 3 - (Math.random() - 0.5) * 3,
+              vy: -Math.sin(this.rotation) * 3 - (Math.random() - 0.5) * 2,
               life: 25,
               element: particle
             };
@@ -732,14 +878,19 @@
 
             // Remove all game elements
             if (this.rocket) this.rocket.remove();
+            if (this.instructionPopup) this.instructionPopup.remove();
+            if (this.scoreDisplay) this.scoreDisplay.remove();
             this.bullets.forEach(bullet => bullet.element.remove());
             this.engineParticles.forEach(particle => particle.element.remove());
             this.enemies.forEach(enemy => enemy.element.remove());
+            this.stars.forEach(star => star.element.remove());
 
             // Reset game state
             this.bullets = [];
             this.engineParticles = [];
             this.enemies = [];
+            this.stars = [];
+            this.hasMoved = false;
 
             // Show button again
             document.getElementById('rocketBtn').style.display = 'inline-block';
