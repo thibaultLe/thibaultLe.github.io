@@ -441,10 +441,10 @@
             this.vy = 0;
             this.rotation = 0;
             this.thrust = 0;
-            this.maxThrust = 0.4;
-            this.friction = 0.95;
-            this.rotationSpeed = 0.08;
-            this.thrustAccel = 0.015;
+            this.maxThrust = 0.4; // Reduced from 0.8
+            this.friction = 0.95; // Increased from 0.98 for more control
+            this.rotationSpeed = 0.08; // Reduced from 0.12
+            this.thrustAccel = 0.015; // Reduced from 0.03
             this.engineParticles = [];
             this.bullets = [];
             this.lastShot = 0;
@@ -460,11 +460,6 @@
             this.maxBinaryStars = 2;
             this.hasMoved = false;
             this.instructionPopup = null;
-
-            // Performance optimizations
-            this.lastFrameTime = 0;
-            this.targetFPS = 60;
-            this.frameInterval = 1000 / this.targetFPS;
 
             this.setupRocket();
             this.setupControls();
@@ -661,8 +656,7 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 20px #ffd700;
-              will-change: transform;
-              transform: translateZ(0);
+              animation: twinkle 1.5s infinite alternate;
             `;
 
             // Add twinkle animation
@@ -680,8 +674,8 @@
             const y = Math.random() * (window.innerHeight - 80) + 40;
 
             // Random velocity for slow movement
-            const vx = (Math.random() - 0.5) * 0.3; // Reduced from 0.5
-            const vy = (Math.random() - 0.5) * 0.3; // Reduced from 0.5
+            const vx = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
+            const vy = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
 
             star.style.left = x + 'px';
             star.style.top = y + 'px';
@@ -702,8 +696,9 @@
               if (star.y < -50) star.y = window.innerHeight + 50;
               if (star.y > window.innerHeight + 50) star.y = -50;
 
-              // Use transform instead of left/top for better performance
-              star.element.style.transform = `translate(${star.x}px, ${star.y}px)`;
+              // Update element position
+              star.element.style.left = star.x + 'px';
+              star.element.style.top = star.y + 'px';
             });
           }
 
@@ -731,8 +726,7 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 25px #ff4444;
-              will-change: transform;
-              transform: translateZ(0);
+              animation: twinkle 2s infinite alternate;
             `;
 
             // Create small white star
@@ -746,8 +740,7 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 15px #ffffff;
-              will-change: transform;
-              transform: translateZ(0);
+              animation: twinkle 2s infinite alternate;
             `;
 
             document.body.appendChild(star1);
@@ -775,9 +768,11 @@
               binary.star2.x = binary.centerX + Math.cos(binary.angle + Math.PI) * binary.orbitRadius;
               binary.star2.y = binary.centerY + Math.sin(binary.angle + Math.PI) * binary.orbitRadius;
 
-              // Use transform for better performance
-              binary.star1.element.style.transform = `translate(${binary.star1.x}px, ${binary.star1.y}px)`;
-              binary.star2.element.style.transform = `translate(${binary.star2.x}px, ${binary.star2.y}px)`;
+              // Update element positions
+              binary.star1.element.style.left = binary.star1.x + 'px';
+              binary.star1.element.style.top = binary.star1.y + 'px';
+              binary.star2.element.style.left = binary.star2.x + 'px';
+              binary.star2.element.style.top = binary.star2.y + 'px';
             });
           }
 
@@ -877,7 +872,8 @@
                 bullet.element.remove();
                 this.bullets.splice(index, 1);
               } else {
-                bullet.element.style.transform = `translate(${bullet.x}px, ${bullet.y}px)`;
+                bullet.element.style.left = bullet.x + 'px';
+                bullet.element.style.top = bullet.y + 'px';
               }
             });
 
@@ -890,7 +886,8 @@
                 particle.element.remove();
                 this.engineParticles.splice(index, 1);
               } else {
-                particle.element.style.transform = `translate(${particle.x}px, ${particle.y}px)`;
+                particle.element.style.left = particle.x + 'px';
+                particle.element.style.top = particle.y + 'px';
                 particle.element.style.opacity = particle.life / 20;
               }
             });
@@ -904,7 +901,8 @@
               if (enemy.x <= 0 || enemy.x >= window.innerWidth) enemy.vx *= -1;
               if (enemy.y <= 0 || enemy.y >= window.innerHeight) enemy.vy *= -1;
 
-              enemy.element.style.transform = `translate(${enemy.x}px, ${enemy.y}px)`;
+              enemy.element.style.left = enemy.x + 'px';
+              enemy.element.style.top = enemy.y + 'px';
 
               // Check bullet collisions
               this.bullets.forEach((bullet, bulletIndex) => {
@@ -983,8 +981,9 @@
           }
 
           updateRocketPosition() {
-            // Use transform instead of left/top for better performance
-            this.rocket.style.transform = `translate(${this.x - 20}px, ${this.y - 20}px) rotate(${this.rotation}rad)`;
+            this.rocket.style.left = (this.x - 20) + 'px';
+            this.rocket.style.top = (this.y - 20) + 'px';
+            this.rocket.style.transform = `rotate(${this.rotation}rad)`;
           }
 
           shoot() {
@@ -1024,8 +1023,6 @@
               border-radius: 50%;
               z-index: 9998;
               box-shadow: 0 0 8px #ff6b6b;
-              will-change: transform;
-              transform: translateZ(0);
             `;
 
             // Fix: Use actual rocket position, not calculated position
@@ -1104,14 +1101,7 @@
           }
 
           gameLoop() {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - this.lastFrameTime;
-
-            if (deltaTime >= this.frameInterval) {
-              this.update();
-              this.lastFrameTime = currentTime;
-            }
-
+            this.update();
             requestAnimationFrame(() => this.gameLoop());
           }
 
