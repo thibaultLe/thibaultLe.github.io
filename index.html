@@ -428,6 +428,7 @@
             this.enemies = [];
             this.spawnTimer = 0;
             this.spawnRate = 2000;
+            this.scrollLocked = false;
 
             this.setupRocket();
             this.setupControls();
@@ -436,25 +437,24 @@
           }
 
           setupRocket() {
-            // Create rocket element
+            // Create rocket element with triangular shape
             this.rocket = document.createElement('div');
             this.rocket.id = 'rocketShip';
             this.rocket.style.cssText = `
               position: fixed;
-              width: 40px;
-              height: 20px;
-              background: linear-gradient(45deg, #4ecdc4, #44a08d);
-              border: 2px solid #2c3e50;
-              border-radius: 20px 5px 5px 20px;
+              width: 0;
+              height: 0;
+              border-left: 20px solid #4ecdc4;
+              border-top: 10px solid transparent;
+              border-bottom: 10px solid transparent;
               z-index: 10000;
               transform-origin: center;
-              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-              transition: none;
+              filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
             `;
 
             // Add rocket window
             this.rocket.innerHTML = `
-              <div style="position: absolute; top: 2px; left: 8px; width: 8px; height: 8px; background: #3498db; border-radius: 50%; border: 1px solid #2980b9;"></div>
+              <div style="position: absolute; top: -4px; left: -15px; width: 6px; height: 6px; background: #3498db; border-radius: 50%; border: 1px solid #2980b9;"></div>
             `;
 
             document.body.appendChild(this.rocket);
@@ -464,12 +464,42 @@
           setupControls() {
             this.keys = {};
             document.addEventListener('keydown', (e) => {
+              // Prevent default behavior for arrow keys and space to stop scrolling
+              if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                e.preventDefault();
+              }
+
               this.keys[e.code] = true;
               if (e.code === 'Escape') this.hideGame();
             });
             document.addEventListener('keyup', (e) => {
               this.keys[e.code] = false;
             });
+
+            // Lock scroll position when game starts
+            this.lockScroll();
+          }
+
+          lockScroll() {
+            this.scrollLocked = true;
+            // Store current scroll position
+            this.scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            this.scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Prevent scrolling
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+
+            // Force scroll to top
+            window.scrollTo(0, 0);
+          }
+
+          unlockScroll() {
+            this.scrollLocked = false;
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            // Restore scroll position
+            window.scrollTo(this.scrollX, this.scrollY);
           }
 
           update() {
@@ -576,7 +606,7 @@
           }
 
           updateRocketPosition() {
-            this.rocket.style.left = (this.x - 20) + 'px';
+            this.rocket.style.left = (this.x - 10) + 'px';
             this.rocket.style.top = (this.y - 10) + 'px';
             this.rocket.style.transform = `rotate(${this.rotation}rad)`;
           }
@@ -697,6 +727,9 @@
           }
 
           hideGame() {
+            // Unlock scrolling
+            this.unlockScroll();
+
             // Remove all game elements
             if (this.rocket) this.rocket.remove();
             this.bullets.forEach(bullet => bullet.element.remove());
