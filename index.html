@@ -406,326 +406,321 @@
               </button>
             </div>
 
-            <!-- Overlay Game Container -->
-            <div id="gameOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-              <canvas id="rocketCanvas" style="border: 3px solid #4ecdc4; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></canvas>
-              <p id="gameInstructions" style="color: white; margin-top: 20px; font-size: 16px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                Use arrow keys to steer • Space to shoot • ESC to quit
-              </p>
-              <button id="closeGameBtn" style="background: linear-gradient(45deg, #ff6b6b, #e74c3c); border: none; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;">
-                Close Game
-              </button>
-            </div>
+      <script>
+        // Rocket Ship Game - Flies over website content
+        class RocketShip {
+          constructor() {
+            this.x = window.innerWidth / 2;
+            this.y = window.innerHeight / 2;
+            this.vx = 0;
+            this.vy = 0;
+            this.rotation = 0;
+            this.thrust = 0;
+            this.maxThrust = 0.8;
+            this.friction = 0.98;
+            this.rotationSpeed = 0.12;
+            this.thrustAccel = 0.03;
+            this.engineParticles = [];
+            this.bullets = [];
+            this.lastShot = 0;
+            this.shotCooldown = 150;
+            this.score = 0;
+            this.enemies = [];
+            this.spawnTimer = 0;
+            this.spawnRate = 2000;
 
-            <script>
-              // Rocket Ship Game
-              class RocketShip {
-                constructor(canvas) {
-                  this.canvas = canvas;
-                  this.ctx = canvas.getContext('2d');
-                  this.x = canvas.width / 2;
-                  this.y = canvas.height / 2;
-                  this.vx = 0;
-                  this.vy = 0;
-                  this.rotation = 0;
-                  this.thrust = 0;
-                  this.maxThrust = 0.5;
-                  this.friction = 0.98;
-                  this.rotationSpeed = 0.1;
-                  this.thrustAccel = 0.02;
-                  this.bullets = [];
-                  this.lastShot = 0;
-                  this.shotCooldown = 200;
-                  this.engineParticles = [];
-                  this.score = 0;
-                  this.enemies = [];
-                  this.spawnTimer = 0;
-                  this.spawnRate = 3000;
+            this.setupRocket();
+            this.setupControls();
+            this.spawnEnemies();
+            this.gameLoop();
+          }
 
-                  this.setupCanvas();
-                  this.setupControls();
-                  this.spawnEnemies();
-                  this.gameLoop();
-                }
+          setupRocket() {
+            // Create rocket element
+            this.rocket = document.createElement('div');
+            this.rocket.id = 'rocketShip';
+            this.rocket.style.cssText = `
+              position: fixed;
+              width: 40px;
+              height: 20px;
+              background: linear-gradient(45deg, #4ecdc4, #44a08d);
+              border: 2px solid #2c3e50;
+              border-radius: 20px 5px 5px 20px;
+              z-index: 10000;
+              transform-origin: center;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+              transition: none;
+            `;
 
-                setupCanvas() {
-                  // Make canvas responsive to window size
-                  this.canvas.width = Math.min(800, window.innerWidth - 100);
-                  this.canvas.height = Math.min(600, window.innerHeight - 200);
-                  this.x = this.canvas.width / 2;
-                  this.y = this.canvas.height / 2;
-                }
+            // Add rocket window
+            this.rocket.innerHTML = `
+              <div style="position: absolute; top: 2px; left: 8px; width: 8px; height: 8px; background: #3498db; border-radius: 50%; border: 1px solid #2980b9;"></div>
+            `;
 
-                setupControls() {
-                  this.keys = {};
-                  document.addEventListener('keydown', (e) => {
-                    this.keys[e.code] = true;
-                    if (e.code === 'Escape') this.hideGame();
-                  });
-                  document.addEventListener('keyup', (e) => {
-                    this.keys[e.code] = false;
-                  });
-                }
+            document.body.appendChild(this.rocket);
+            this.updateRocketPosition();
+          }
 
-                update() {
-                  // Rotation
-                  if (this.keys['ArrowLeft']) this.rotation -= this.rotationSpeed;
-                  if (this.keys['ArrowRight']) this.rotation += this.rotationSpeed;
+          setupControls() {
+            this.keys = {};
+            document.addEventListener('keydown', (e) => {
+              this.keys[e.code] = true;
+              if (e.code === 'Escape') this.hideGame();
+            });
+            document.addEventListener('keyup', (e) => {
+              this.keys[e.code] = false;
+            });
+          }
 
-                  // Thrust
-                  if (this.keys['ArrowUp']) {
-                    this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
-                    this.addEngineParticles();
-                  } else {
-                    this.thrust = Math.max(this.thrust - this.thrustAccel * 2, 0);
-                  }
+          update() {
+            // Rotation
+            if (this.keys['ArrowLeft']) this.rotation -= this.rotationSpeed;
+            if (this.keys['ArrowRight']) this.rotation += this.rotationSpeed;
 
-                  // Apply thrust
-                  this.vx += Math.cos(this.rotation) * this.thrust;
-                  this.vy += Math.sin(this.rotation) * this.thrust;
+            // Thrust
+            if (this.keys['ArrowUp']) {
+              this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
+              this.addEngineParticles();
+            } else {
+              this.thrust = Math.max(this.thrust - this.thrustAccel * 2, 0);
+            }
 
-                  // Apply friction
-                  this.vx *= this.friction;
-                  this.vy *= this.friction;
+            // Apply thrust
+            this.vx += Math.cos(this.rotation) * this.thrust;
+            this.vy += Math.sin(this.rotation) * this.thrust;
 
-                  // Update position
-                  this.x += this.vx;
-                  this.y += this.vy;
+            // Apply friction
+            this.vx *= this.friction;
+            this.vy *= this.friction;
 
-                  // Wrap around edges
-                  if (this.x < 0) this.x = this.canvas.width;
-                  if (this.x > this.canvas.width) this.x = 0;
-                  if (this.y < 0) this.y = this.canvas.height;
-                  if (this.y > this.canvas.height) this.y = 0;
+            // Update position
+            this.x += this.vx;
+            this.y += this.vy;
 
-                  // Shooting
-                  if (this.keys['Space'] && Date.now() - this.lastShot > this.shotCooldown) {
-                    this.shoot();
-                    this.lastShot = Date.now();
-                  }
+            // Wrap around screen edges
+            if (this.x < -50) this.x = window.innerWidth + 50;
+            if (this.x > window.innerWidth + 50) this.x = -50;
+            if (this.y < -50) this.y = window.innerHeight + 50;
+            if (this.y > window.innerHeight + 50) this.y = -50;
 
-                  // Update bullets
-                  this.bullets.forEach((bullet, index) => {
-                    bullet.x += bullet.vx;
-                    bullet.y += bullet.vy;
-                    bullet.life--;
-                    if (bullet.life <= 0) this.bullets.splice(index, 1);
-                  });
+            // Shooting
+            if (this.keys['Space'] && Date.now() - this.lastShot > this.shotCooldown) {
+              this.shoot();
+              this.lastShot = Date.now();
+            }
 
-                  // Update engine particles
-                  this.engineParticles.forEach((particle, index) => {
-                    particle.x += particle.vx;
-                    particle.y += particle.vy;
-                    particle.life--;
-                    if (particle.life <= 0) this.engineParticles.splice(index, 1);
-                  });
-
-                  // Update enemies
-                  this.enemies.forEach((enemy, index) => {
-                    enemy.x += enemy.vx;
-                    enemy.y += enemy.vy;
-
-                    // Bounce off edges
-                    if (enemy.x <= 0 || enemy.x >= this.canvas.width) enemy.vx *= -1;
-                    if (enemy.y <= 0 || enemy.y >= this.canvas.height) enemy.vy *= -1;
-
-                    // Check bullet collisions
-                    this.bullets.forEach((bullet, bulletIndex) => {
-                      const dx = bullet.x - enemy.x;
-                      const dy = bullet.y - enemy.y;
-                      const distance = Math.sqrt(dx * dx + dy * dy);
-                      if (distance < 20) {
-                        this.score += 100;
-                        this.enemies.splice(index, 1);
-                        this.bullets.splice(bulletIndex, 1);
-                      }
-                    });
-                  });
-
-                  // Spawn new enemies
-                  this.spawnTimer += 16;
-                  if (this.spawnTimer > this.spawnRate) {
-                    this.spawnEnemy();
-                    this.spawnTimer = 0;
-                  }
-                }
-
-                shoot() {
-                  const bullet = {
-                    x: this.x + Math.cos(this.rotation) * 30,
-                    y: this.y + Math.sin(this.rotation) * 30,
-                    vx: Math.cos(this.rotation) * 8,
-                    vy: Math.sin(this.rotation) * 8,
-                    life: 60
-                  };
-                  this.bullets.push(bullet);
-                }
-
-                addEngineParticles() {
-                  const particle = {
-                    x: this.x - Math.cos(this.rotation) * 25,
-                    y: this.y - Math.sin(this.rotation) * 25,
-                    vx: -Math.cos(this.rotation) * 2 - (Math.random() - 0.5) * 2,
-                    vy: -Math.sin(this.rotation) * 2 - (Math.random() - 0.5) * 2,
-                    life: 20,
-                    size: Math.random() * 3 + 2
-                  };
-                  this.engineParticles.push(particle);
-                }
-
-                spawnEnemy() {
-                  const side = Math.floor(Math.random() * 4);
-                  let x, y, vx, vy;
-
-                  switch(side) {
-                    case 0: // top
-                      x = Math.random() * this.canvas.width;
-                      y = -20;
-                      vx = (Math.random() - 0.5) * 2;
-                      vy = Math.random() * 2 + 1;
-                      break;
-                    case 1: // right
-                      x = this.canvas.width + 20;
-                      y = Math.random() * this.canvas.height;
-                      vx = -Math.random() * 2 - 1;
-                      vy = (Math.random() - 0.5) * 2;
-                      break;
-                    case 2: // bottom
-                      x = Math.random() * this.canvas.width;
-                      y = this.canvas.height + 20;
-                      vx = (Math.random() - 0.5) * 2;
-                      vy = -Math.random() * 2 - 1;
-                      break;
-                    case 3: // left
-                      x = -20;
-                      y = Math.random() * this.canvas.height;
-                      vx = Math.random() * 2 + 1;
-                      vy = (Math.random() - 0.5) * 2;
-                      break;
-                  }
-
-                  this.enemies.push({ x, y, vx, vy });
-                }
-
-                spawnEnemies() {
-                  for (let i = 0; i < 5; i++) {
-                    this.spawnEnemy();
-                  }
-                }
-
-                draw() {
-                  // Clear canvas
-                  this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                  // Draw stars background
-                  this.drawStars();
-
-                  // Draw engine particles
-                  this.engineParticles.forEach(particle => {
-                    this.ctx.fillStyle = `rgba(255, ${Math.floor(255 - particle.life * 10)}, 0, ${particle.life / 20})`;
-                    this.ctx.beginPath();
-                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                  });
-
-                  // Draw bullets
-                  this.ctx.fillStyle = '#ffff00';
-                  this.bullets.forEach(bullet => {
-                    this.ctx.beginPath();
-                    this.ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
-                    this.ctx.fill();
-                  });
-
-                  // Draw enemies
-                  this.ctx.fillStyle = '#ff4444';
-                  this.enemies.forEach(enemy => {
-                    this.ctx.beginPath();
-                    this.ctx.arc(enemy.x, enemy.y, 15, 0, Math.PI * 2);
-                    this.ctx.fill();
-                  });
-
-                  // Draw rocket ship
-                  this.ctx.save();
-                  this.ctx.translate(this.x, this.y);
-                  this.ctx.rotate(this.rotation);
-
-                  // Ship body
-                  this.ctx.fillStyle = '#4ecdc4';
-                  this.ctx.beginPath();
-                  this.ctx.moveTo(20, 0);
-                  this.ctx.lineTo(-15, -10);
-                  this.ctx.lineTo(-10, 0);
-                  this.ctx.lineTo(-15, 10);
-                  this.ctx.closePath();
-                  this.ctx.fill();
-
-                  // Ship outline
-                  this.ctx.strokeStyle = '#2c3e50';
-                  this.ctx.lineWidth = 2;
-                  this.ctx.stroke();
-
-                  // Windows
-                  this.ctx.fillStyle = '#3498db';
-                  this.ctx.beginPath();
-                  this.ctx.arc(5, 0, 4, 0, Math.PI * 2);
-                  this.ctx.fill();
-
-                  this.ctx.restore();
-
-                  // Draw score
-                  this.ctx.fillStyle = 'white';
-                  this.ctx.font = '20px Arial';
-                  this.ctx.fillText(`Score: ${this.score}`, 20, 30);
-                }
-
-                drawStars() {
-                  this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                  for (let i = 0; i < 50; i++) {
-                    const x = (i * 37) % this.canvas.width;
-                    const y = (i * 73) % this.canvas.height;
-                    const size = (i % 3) + 1;
-                    const opacity = (Math.sin(Date.now() * 0.001 + i) + 1) / 2;
-                    this.ctx.globalAlpha = 0.3 + opacity * 0.5;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                  }
-                  this.ctx.globalAlpha = 1;
-                }
-
-                gameLoop() {
-                  this.update();
-                  this.draw();
-                  requestAnimationFrame(() => this.gameLoop());
-                }
-
-                hideGame() {
-                  document.getElementById('gameOverlay').style.display = 'none';
-                  document.getElementById('rocketBtn').style.display = 'inline-block';
-                }
+            // Update bullets
+            this.bullets.forEach((bullet, index) => {
+              bullet.x += bullet.vx;
+              bullet.y += bullet.vy;
+              bullet.life--;
+              if (bullet.life <= 0) {
+                bullet.element.remove();
+                this.bullets.splice(index, 1);
+              } else {
+                bullet.element.style.left = bullet.x + 'px';
+                bullet.element.style.top = bullet.y + 'px';
               }
+            });
 
-              // Game initialization
-              let rocketGame = null;
+            // Update engine particles
+            this.engineParticles.forEach((particle, index) => {
+              particle.x += particle.vx;
+              particle.y += particle.vy;
+              particle.life--;
+              if (particle.life <= 0) {
+                particle.element.remove();
+                this.engineParticles.splice(index, 1);
+              } else {
+                particle.element.style.left = particle.x + 'px';
+                particle.element.style.top = particle.y + 'px';
+                particle.element.style.opacity = particle.life / 20;
+              }
+            });
 
-              document.getElementById('rocketBtn').addEventListener('click', function() {
-                const overlay = document.getElementById('gameOverlay');
+            // Update enemies
+            this.enemies.forEach((enemy, index) => {
+              enemy.x += enemy.vx;
+              enemy.y += enemy.vy;
 
-                this.style.display = 'none';
-                overlay.style.display = 'flex';
+              // Bounce off screen edges
+              if (enemy.x <= 0 || enemy.x >= window.innerWidth) enemy.vx *= -1;
+              if (enemy.y <= 0 || enemy.y >= window.innerHeight) enemy.vy *= -1;
 
-                if (!rocketGame) {
-                  const canvas = document.getElementById('rocketCanvas');
-                  rocketGame = new RocketShip(canvas);
+              enemy.element.style.left = enemy.x + 'px';
+              enemy.element.style.top = enemy.y + 'px';
+
+              // Check bullet collisions
+              this.bullets.forEach((bullet, bulletIndex) => {
+                const dx = bullet.x - enemy.x;
+                const dy = bullet.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 25) {
+                  this.score += 100;
+                  enemy.element.remove();
+                  this.enemies.splice(index, 1);
+                  bullet.element.remove();
+                  this.bullets.splice(bulletIndex, 1);
                 }
               });
+            });
 
-              // Close game button
-              document.getElementById('closeGameBtn').addEventListener('click', function() {
-                document.getElementById('gameOverlay').style.display = 'none';
-                document.getElementById('rocketBtn').style.display = 'inline-block';
-              });
-            </script>
+            // Spawn new enemies
+            this.spawnTimer += 16;
+            if (this.spawnTimer > this.spawnRate) {
+              this.spawnEnemy();
+              this.spawnTimer = 0;
+            }
+
+            this.updateRocketPosition();
+          }
+
+          updateRocketPosition() {
+            this.rocket.style.left = (this.x - 20) + 'px';
+            this.rocket.style.top = (this.y - 10) + 'px';
+            this.rocket.style.transform = `rotate(${this.rotation}rad)`;
+          }
+
+          shoot() {
+            const bullet = document.createElement('div');
+            bullet.style.cssText = `
+              position: fixed;
+              width: 6px;
+              height: 6px;
+              background: #ffff00;
+              border-radius: 50%;
+              z-index: 9999;
+              box-shadow: 0 0 10px #ffff00;
+            `;
+
+            const bulletObj = {
+              x: this.x + Math.cos(this.rotation) * 30,
+              y: this.y + Math.sin(this.rotation) * 30,
+              vx: Math.cos(this.rotation) * 10,
+              vy: Math.sin(this.rotation) * 10,
+              life: 60,
+              element: bullet
+            };
+
+            bullet.style.left = bulletObj.x + 'px';
+            bullet.style.top = bulletObj.y + 'px';
+            document.body.appendChild(bullet);
+            this.bullets.push(bulletObj);
+          }
+
+          addEngineParticles() {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+              position: fixed;
+              width: 4px;
+              height: 4px;
+              background: linear-gradient(45deg, #ff6b6b, #ffa500);
+              border-radius: 50%;
+              z-index: 9998;
+              box-shadow: 0 0 8px #ff6b6b;
+            `;
+
+            const particleObj = {
+              x: this.x - Math.cos(this.rotation) * 25,
+              y: this.y - Math.sin(this.rotation) * 25,
+              vx: -Math.cos(this.rotation) * 3 - (Math.random() - 0.5) * 3,
+              vy: -Math.sin(this.rotation) * 3 - (Math.random() - 0.5) * 3,
+              life: 25,
+              element: particle
+            };
+
+            particle.style.left = particleObj.x + 'px';
+            particle.style.top = particleObj.y + 'px';
+            document.body.appendChild(particle);
+            this.engineParticles.push(particleObj);
+          }
+
+          spawnEnemy() {
+            const enemy = document.createElement('div');
+            enemy.style.cssText = `
+              position: fixed;
+              width: 30px;
+              height: 30px;
+              background: radial-gradient(circle, #ff4444, #cc0000);
+              border: 2px solid #990000;
+              border-radius: 50%;
+              z-index: 9997;
+              box-shadow: 0 0 15px #ff4444;
+            `;
+
+            const side = Math.floor(Math.random() * 4);
+            let x, y, vx, vy;
+
+            switch(side) {
+              case 0: // top
+                x = Math.random() * window.innerWidth;
+                y = -30;
+                vx = (Math.random() - 0.5) * 3;
+                vy = Math.random() * 2 + 1;
+                break;
+              case 1: // right
+                x = window.innerWidth + 30;
+                y = Math.random() * window.innerHeight;
+                vx = -Math.random() * 2 - 1;
+                vy = (Math.random() - 0.5) * 3;
+                break;
+              case 2: // bottom
+                x = Math.random() * window.innerWidth;
+                y = window.innerHeight + 30;
+                vx = (Math.random() - 0.5) * 3;
+                vy = -Math.random() * 2 - 1;
+                break;
+              case 3: // left
+                x = -30;
+                y = Math.random() * window.innerHeight;
+                vx = Math.random() * 2 + 1;
+                vy = (Math.random() - 0.5) * 3;
+                break;
+            }
+
+            enemy.style.left = x + 'px';
+            enemy.style.top = y + 'px';
+            document.body.appendChild(enemy);
+
+            this.enemies.push({ x, y, vx, vy, element: enemy });
+          }
+
+          spawnEnemies() {
+            for (let i = 0; i < 6; i++) {
+              this.spawnEnemy();
+            }
+          }
+
+          gameLoop() {
+            this.update();
+            requestAnimationFrame(() => this.gameLoop());
+          }
+
+          hideGame() {
+            // Remove all game elements
+            if (this.rocket) this.rocket.remove();
+            this.bullets.forEach(bullet => bullet.element.remove());
+            this.engineParticles.forEach(particle => particle.element.remove());
+            this.enemies.forEach(enemy => enemy.element.remove());
+
+            // Reset game state
+            this.bullets = [];
+            this.engineParticles = [];
+            this.enemies = [];
+
+            // Show button again
+            document.getElementById('rocketBtn').style.display = 'inline-block';
+          }
+        }
+
+        // Game initialization
+        let rocketGame = null;
+
+        document.getElementById('rocketBtn').addEventListener('click', function() {
+          this.style.display = 'none';
+          rocketGame = new RocketShip();
+        });
+      </script>
 
     </section>
 
