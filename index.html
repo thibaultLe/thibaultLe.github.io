@@ -438,6 +438,7 @@
             this.setupControls();
             this.setupInstructionPopup();
             this.setupScoreDisplay();
+            this.setupEscNote();
             this.spawnEnemies();
             this.spawnStars();
             this.gameLoop();
@@ -528,6 +529,34 @@
 
             this.updateScoreDisplay();
             document.body.appendChild(this.scoreDisplay);
+          }
+
+          setupEscNote() {
+            this.escNote = document.createElement('div');
+            this.escNote.style.cssText = `
+              position: fixed;
+              bottom: 20px;
+              right: 20px;
+              background: rgba(0, 0, 0, 0.7);
+              color: white;
+              padding: 10px 15px;
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: Arial, sans-serif;
+              z-index: 10001;
+              border: 1px solid #4ecdc4;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+              opacity: 0.8;
+            `;
+
+            this.escNote.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">⌨️</span>
+                <span>Press <strong>Esc</strong> to close</span>
+              </div>
+            `;
+
+            document.body.appendChild(this.escNote);
           }
 
           updateScoreDisplay() {
@@ -880,6 +909,7 @@
             if (this.rocket) this.rocket.remove();
             if (this.instructionPopup) this.instructionPopup.remove();
             if (this.scoreDisplay) this.scoreDisplay.remove();
+            if (this.escNote) this.escNote.remove();
             this.bullets.forEach(bullet => bullet.element.remove());
             this.engineParticles.forEach(particle => particle.element.remove());
             this.enemies.forEach(enemy => enemy.element.remove());
