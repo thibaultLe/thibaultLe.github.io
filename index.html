@@ -392,18 +392,19 @@
     </script>
 
       <!-- FuckUpMySite link -->
-      <p style="text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.7;">
-        <a href="https://www.fuckupmysite.com/?url=https%3A%2F%2Fthibaultle.github.io&torchCursor=true&comicSans=true&fakeCursors=true&peskyFly=true" target="_blank" style="color: inherit; text-decoration: none;">
+      <!-- <p style="text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.7;">
+        <a href="https://www.fuckupmysite.com/?url=https%3A%2F%2Fthibaultle.github.io&torchCursor=true&comicSans=true&fakeCursors=true&peskyFly=true" target="_blank" style="color: inherit; text-decoration: underline;">
           Tired of reading this?
         </a>
-      </p>
+      </p> -->
 
 
       <!-- Rocket Ship Game -->
       <div id="rocketGameContainer" style="text-align: center; margin-top: 30px;">
-        <button id="rocketBtn" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); border: none; color: white; padding: 12px 24px; border-radius: 25px; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-           Launch Rocket Ship!
-        </button>
+        <div style="font-size: 12px; opacity: 0.6; line-height: 1.4;">
+          <div style="margin-bottom: 5px;">• <span id="rocketBtn" style="cursor: pointer; text-decoration: underline;">Launch rocketship</span></div>
+          <div>• <a href="https://www.fuckupmysite.com/?url=https%3A%2F%2Fthibaultle.github.io&torchCursor=true&comicSans=true&fakeCursors=true&peskyFly=true" target="_blank" style="color: inherit; text-decoration: underline;">Destroy this site</a></div>
+        </div>
       </div>
 
       <script>
@@ -672,11 +673,33 @@
             const x = Math.random() * (window.innerWidth - 80) + 40;
             const y = Math.random() * (window.innerHeight - 80) + 40;
 
+            // Random velocity for slow movement
+            const vx = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
+            const vy = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
+
             star.style.left = x + 'px';
             star.style.top = y + 'px';
             document.body.appendChild(star);
 
-            this.stars.push({ x, y, element: star, size: size/2 });
+            this.stars.push({ x, y, vx, vy, element: star, size: size/2 });
+          }
+
+          updateStars() {
+            this.stars.forEach((star, index) => {
+              // Update position
+              star.x += star.vx;
+              star.y += star.vy;
+
+              // Wrap around screen edges
+              if (star.x < -50) star.x = window.innerWidth + 50;
+              if (star.x > window.innerWidth + 50) star.x = -50;
+              if (star.y < -50) star.y = window.innerHeight + 50;
+              if (star.y > window.innerHeight + 50) star.y = -50;
+
+              // Update element position
+              star.element.style.left = star.x + 'px';
+              star.element.style.top = star.y + 'px';
+            });
           }
 
           spawnBinaryStars() {
@@ -896,6 +919,9 @@
                 }
               });
             });
+
+            // Update stars
+            this.updateStars();
 
             // Check star collisions
             this.stars.forEach((star, index) => {
