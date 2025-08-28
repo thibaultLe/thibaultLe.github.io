@@ -579,7 +579,7 @@
             this.escNote.innerHTML = `
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 16px;">⌨️</span>
-                <span>Press <strong>Esc</strong> to close</span>
+                <span>Press Esc to close</span>
               </div>
             `;
 
@@ -644,10 +644,12 @@
 
           spawnStar() {
             const star = document.createElement('div');
+            // Random size between 25px and 40px
+            const size = 25 + Math.random() * 15;
             star.style.cssText = `
               position: fixed;
-              width: 30px;
-              height: 30px;
+              width: ${size}px;
+              height: ${size}px;
               background: radial-gradient(circle, #ffd700, #ffed4e);
               border: 2px solid #ffb347;
               border-radius: 50%;
@@ -667,14 +669,14 @@
             document.head.appendChild(style);
 
             // Random position
-            const x = Math.random() * (window.innerWidth - 60) + 30;
-            const y = Math.random() * (window.innerHeight - 60) + 30;
+            const x = Math.random() * (window.innerWidth - 80) + 40;
+            const y = Math.random() * (window.innerHeight - 80) + 40;
 
             star.style.left = x + 'px';
             star.style.top = y + 'px';
             document.body.appendChild(star);
 
-            this.stars.push({ x, y, element: star });
+            this.stars.push({ x, y, element: star, size: size/2 });
           }
 
           spawnBinaryStars() {
@@ -684,37 +686,37 @@
           }
 
           spawnBinaryStar() {
-            const centerX = Math.random() * (window.innerWidth - 100) + 50;
-            const centerY = Math.random() * (window.innerHeight - 100) + 50;
-            const orbitRadius = 25;
-            const orbitSpeed = 0.02 + Math.random() * 0.03;
+            const centerX = Math.random() * (window.innerWidth - 150) + 75;
+            const centerY = Math.random() * (window.innerHeight - 150) + 75;
+            const orbitRadius = 30 + Math.random() * 40; // 30-70px separation
+            const orbitSpeed = 0.01 + (0.03 * (30 / orbitRadius)); // Slower for wider separations
             const startAngle = Math.random() * Math.PI * 2;
 
-            // Create first star
+            // Create big red star
             const star1 = document.createElement('div');
             star1.style.cssText = `
               position: fixed;
-              width: 25px;
-              height: 25px;
-              background: radial-gradient(circle, #ff6b6b, #ff8e8e);
-              border: 2px solid #ff4444;
+              width: 35px;
+              height: 35px;
+              background: radial-gradient(circle, #ff4444, #cc0000);
+              border: 2px solid #990000;
               border-radius: 50%;
               z-index: 9996;
-              box-shadow: 0 0 20px #ff6b6b;
+              box-shadow: 0 0 25px #ff4444;
               animation: twinkle 2s infinite alternate;
             `;
 
-            // Create second star
+            // Create small white star
             const star2 = document.createElement('div');
             star2.style.cssText = `
               position: fixed;
-              width: 25px;
-              height: 25px;
-              background: radial-gradient(circle, #4ecdc4, #44a08d);
-              border: 2px solid #2c3e50;
+              width: 18px;
+              height: 18px;
+              background: radial-gradient(circle, #ffffff, #f0f0f0);
+              border: 2px solid #cccccc;
               border-radius: 50%;
               z-index: 9996;
-              box-shadow: 0 0 20px #4ecdc4;
+              box-shadow: 0 0 15px #ffffff;
               animation: twinkle 2s infinite alternate;
             `;
 
@@ -900,9 +902,9 @@
               const dx = this.x - star.x;
               const dy = this.y - star.y;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              if (distance < 35) {
+              if (distance < 35 + star.size) {
                 // Collect star
-                this.score += 100; // Changed from 50 to 100
+                this.score += 100;
                 this.showScorePopup(star.x, star.y, 100, '#ffff00');
                 star.element.remove();
                 this.stars.splice(index, 1);
@@ -997,17 +999,21 @@
               box-shadow: 0 0 8px #ff6b6b;
             `;
 
+            // Fix: Use actual rocket position, not calculated position
+            const particleX = this.x - Math.cos(this.rotation) * 40;
+            const particleY = this.y - Math.sin(this.rotation) * 40;
+
             const particleObj = {
-              x: this.x - Math.cos(this.rotation) * 40,
-              y: this.y - Math.sin(this.rotation) * 40,
+              x: particleX,
+              y: particleY,
               vx: -Math.cos(this.rotation) * 3 - (Math.random() - 0.5) * 3,
               vy: -Math.sin(this.rotation) * 3 - (Math.random() - 0.5) * 2,
               life: 25,
               element: particle
             };
 
-            particle.style.left = particleObj.x + 'px';
-            particle.style.top = particleObj.y + 'px';
+            particle.style.left = particleX + 'px';
+            particle.style.top = particleY + 'px';
             document.body.appendChild(particle);
             this.engineParticles.push(particleObj);
           }
@@ -1039,7 +1045,7 @@
                 x = window.innerWidth + 30;
                 y = Math.random() * window.innerHeight;
                 vx = -Math.random() * 2 - 1;
-                vy = (Math.random() - 0.5) * 3;
+                vy = (Math.random() - 0.5) * 2;
                 break;
               case 2: // bottom
                 x = Math.random() * window.innerWidth;
@@ -1051,7 +1057,7 @@
                 x = -30;
                 y = Math.random() * window.innerHeight;
                 vx = Math.random() * 2 + 1;
-                vy = (Math.random() - 0.5) * 3;
+                vy = (Math.random() - 0.5) * 2;
                 break;
             }
 
