@@ -314,7 +314,7 @@
         I was previously a Research Assistant in the <a href="https://science.gsfc.nasa.gov/astrophysics/astroparticles/" title="Astroparticle Physics Lab">Astroparticle Physics Lab</a> and
         the <a href="https://science.gsfc.nasa.gov/astrophysics/gravity/" title="Gravitational Astrophysics Lab">Gravitational Astrophysics Lab</a>
         at <a href="https://www.nasa.gov/goddard/" title="NASA Goddard">NASA Goddard Space Flight Center</a>.
-        I have an MSc. in Computer Science from KU Leuven and research experience in applying AI to astrophysics in numerous projects at NASA and ESA.</p>
+        I have an MSc. in Computer Science from <a href="https://www.kuleuven.be/english/kuleuven/index.html" title="KU Leuven">KU Leuven</a> and research experience in applying AI to astrophysics in numerous projects at NASA and ESA.</p>
 
 
 
@@ -399,6 +399,337 @@
       </p>
 
     </section>
+
+      <!-- FuckUpMySite link -->
+      <p style="text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.7;">
+        <a href="https://www.fuckupmysite.com/?url=https%3A%2F%2Fthibaultle.github.io&torchCursor=true&comicSans=true&fakeCursors=true&peskyFly=true" target="_blank" style="color: inherit; text-decoration: none;">
+          Tired of reading this?
+        </a>
+      </p>
+
+      <!-- Rocket Ship Game -->
+      <div style="text-align: center; margin-top: 30px;">
+        <button id="rocketBtn" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); border: none; color: white; padding: 12px 24px; border-radius: 25px; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+          �� Launch Rocket Ship!
+        </button>
+        <canvas id="rocketCanvas" style="display: none; border: 2px solid #333; border-radius: 8px; margin-top: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></canvas>
+        <p id="gameInstructions" style="display: none; margin-top: 10px; font-size: 14px; opacity: 0.8;">
+          Use arrow keys to steer • Space to shoot • ESC to quit
+        </p>
+      </div>
+
+      <script>
+        // Rocket Ship Game
+        class RocketShip {
+          constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.x = canvas.width / 2;
+            this.y = canvas.height / 2;
+            this.vx = 0;
+            this.vy = 0;
+            this.rotation = 0;
+            this.thrust = 0;
+            this.maxThrust = 0.5;
+            this.friction = 0.98;
+            this.rotationSpeed = 0.1;
+            this.thrustAccel = 0.02;
+            this.bullets = [];
+            this.lastShot = 0;
+            this.shotCooldown = 200;
+            this.engineParticles = [];
+            this.score = 0;
+            this.enemies = [];
+            this.spawnTimer = 0;
+            this.spawnRate = 3000;
+
+            this.setupCanvas();
+            this.setupControls();
+            this.spawnEnemies();
+            this.gameLoop();
+          }
+
+          setupCanvas() {
+            this.canvas.width = 800;
+            this.canvas.height = 600;
+            this.x = this.canvas.width / 2;
+            this.y = this.canvas.height / 2;
+          }
+
+          setupControls() {
+            this.keys = {};
+            document.addEventListener('keydown', (e) => {
+              this.keys[e.code] = true;
+              if (e.code === 'Escape') this.hideGame();
+            });
+            document.addEventListener('keyup', (e) => {
+              this.keys[e.code] = false;
+            });
+          }
+
+          update() {
+            // Rotation
+            if (this.keys['ArrowLeft']) this.rotation -= this.rotationSpeed;
+            if (this.keys['ArrowRight']) this.rotation += this.rotationSpeed;
+
+            // Thrust
+            if (this.keys['ArrowUp']) {
+              this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
+              this.addEngineParticles();
+            } else {
+              this.thrust = Math.max(this.thrust - this.thrustAccel * 2, 0);
+            }
+
+            // Apply thrust
+            this.vx += Math.cos(this.rotation) * this.thrust;
+            this.vy += Math.sin(this.rotation) * this.thrust;
+
+            // Apply friction
+            this.vx *= this.friction;
+            this.vy *= this.friction;
+
+            // Update position
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Wrap around edges
+            if (this.x < 0) this.x = this.canvas.width;
+            if (this.x > this.canvas.width) this.x = 0;
+            if (this.y < 0) this.y = this.canvas.height;
+            if (this.y > this.canvas.height) this.y = 0;
+
+            // Shooting
+            if (this.keys['Space'] && Date.now() - this.lastShot > this.shotCooldown) {
+              this.shoot();
+              this.lastShot = Date.now();
+            }
+
+            // Update bullets
+            this.bullets.forEach((bullet, index) => {
+              bullet.x += bullet.vx;
+              bullet.y += bullet.vy;
+              bullet.life--;
+              if (bullet.life <= 0) this.bullets.splice(index, 1);
+            });
+
+            // Update engine particles
+            this.engineParticles.forEach((particle, index) => {
+              particle.x += particle.vx;
+              particle.y += particle.vy;
+              particle.life--;
+              if (particle.life <= 0) this.engineParticles.splice(index, 1);
+            });
+
+            // Update enemies
+            this.enemies.forEach((enemy, index) => {
+              enemy.x += enemy.vx;
+              enemy.y += enemy.vy;
+
+              // Bounce off edges
+              if (enemy.x <= 0 || enemy.x >= this.canvas.width) enemy.vx *= -1;
+              if (enemy.y <= 0 || enemy.y >= this.canvas.height) enemy.vy *= -1;
+
+              // Check bullet collisions
+              this.bullets.forEach((bullet, bulletIndex) => {
+                const dx = bullet.x - enemy.x;
+                const dy = bullet.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 20) {
+                  this.score += 100;
+                  this.enemies.splice(index, 1);
+                  this.bullets.splice(bulletIndex, 1);
+                }
+              });
+            });
+
+            // Spawn new enemies
+            this.spawnTimer += 16;
+            if (this.spawnTimer > this.spawnRate) {
+              this.spawnEnemy();
+              this.spawnTimer = 0;
+            }
+          }
+
+          shoot() {
+            const bullet = {
+              x: this.x + Math.cos(this.rotation) * 30,
+              y: this.y + Math.sin(this.rotation) * 30,
+              vx: Math.cos(this.rotation) * 8,
+              vy: Math.sin(this.rotation) * 8,
+              life: 60
+            };
+            this.bullets.push(bullet);
+          }
+
+          addEngineParticles() {
+            const particle = {
+              x: this.x - Math.cos(this.rotation) * 25,
+              y: this.y - Math.sin(this.rotation) * 25,
+              vx: -Math.cos(this.rotation) * 2 - (Math.random() - 0.5) * 2,
+              vy: -Math.sin(this.rotation) * 2 - (Math.random() - 0.5) * 2,
+              life: 20,
+              size: Math.random() * 3 + 2
+            };
+            this.engineParticles.push(particle);
+          }
+
+          spawnEnemy() {
+            const side = Math.floor(Math.random() * 4);
+            let x, y, vx, vy;
+
+            switch(side) {
+              case 0: // top
+                x = Math.random() * this.canvas.width;
+                y = -20;
+                vx = (Math.random() - 0.5) * 2;
+                vy = Math.random() * 2 + 1;
+                break;
+              case 1: // right
+                x = this.canvas.width + 20;
+                y = Math.random() * this.canvas.height;
+                vx = -Math.random() * 2 - 1;
+                vy = (Math.random() - 0.5) * 2;
+                break;
+              case 2: // bottom
+                x = Math.random() * this.canvas.width;
+                y = this.canvas.height + 20;
+                vx = (Math.random() - 0.5) * 2;
+                vy = -Math.random() * 2 - 1;
+                break;
+              case 3: // left
+                x = -20;
+                y = Math.random() * this.canvas.height;
+                vx = Math.random() * 2 + 1;
+                vy = (Math.random() - 0.5) * 2;
+                break;
+            }
+
+            this.enemies.push({ x, y, vx, vy });
+          }
+
+          spawnEnemies() {
+            for (let i = 0; i < 5; i++) {
+              this.spawnEnemy();
+            }
+          }
+
+          draw() {
+            // Clear canvas
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Draw stars background
+            this.drawStars();
+
+            // Draw engine particles
+            this.engineParticles.forEach(particle => {
+              this.ctx.fillStyle = `rgba(255, ${Math.floor(255 - particle.life * 10)}, 0, ${particle.life / 20})`;
+              this.ctx.beginPath();
+              this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+              this.ctx.fill();
+            });
+
+            // Draw bullets
+            this.ctx.fillStyle = '#ffff00';
+            this.bullets.forEach(bullet => {
+              this.ctx.beginPath();
+              this.ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+              this.ctx.fill();
+            });
+
+            // Draw enemies
+            this.ctx.fillStyle = '#ff4444';
+            this.enemies.forEach(enemy => {
+              this.ctx.beginPath();
+              this.ctx.arc(enemy.x, enemy.y, 15, 0, Math.PI * 2);
+              this.ctx.fill();
+            });
+
+            // Draw rocket ship
+            this.ctx.save();
+            this.ctx.translate(this.x, this.y);
+            this.ctx.rotate(this.rotation);
+
+            // Ship body
+            this.ctx.fillStyle = '#4ecdc4';
+            this.ctx.beginPath();
+            this.ctx.moveTo(20, 0);
+            this.ctx.lineTo(-15, -10);
+            this.ctx.lineTo(-10, 0);
+            this.ctx.lineTo(-15, 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            // Ship outline
+            this.ctx.strokeStyle = '#2c3e50';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+
+            // Windows
+            this.ctx.fillStyle = '#3498db';
+            this.ctx.beginPath();
+            this.ctx.arc(5, 0, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.restore();
+
+            // Draw score
+            this.ctx.fillStyle = 'white';
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText(`Score: ${this.score}`, 20, 30);
+          }
+
+          drawStars() {
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            for (let i = 0; i < 50; i++) {
+              const x = (i * 37) % this.canvas.width;
+              const y = (i * 73) % this.canvas.height;
+              const size = (i % 3) + 1;
+              const opacity = (Math.sin(Date.now() * 0.001 + i) + 1) / 2;
+              this.ctx.globalAlpha = 0.3 + opacity * 0.5;
+              this.ctx.beginPath();
+              this.ctx.arc(x, y, size, 0, Math.PI * 2);
+              this.ctx.fill();
+            }
+            this.ctx.globalAlpha = 1;
+          }
+
+          gameLoop() {
+            this.update();
+            this.draw();
+            requestAnimationFrame(() => this.gameLoop());
+          }
+
+          hideGame() {
+            this.canvas.style.display = 'none';
+            document.getElementById('gameInstructions').style.display = 'none';
+            document.getElementById('rocketBtn').style.display = 'inline-block';
+          }
+        }
+
+        // Game initialization
+        let rocketGame = null;
+
+        document.getElementById('rocketBtn').addEventListener('click', function() {
+          const canvas = document.getElementById('rocketCanvas');
+          const instructions = document.getElementById('gameInstructions');
+
+          this.style.display = 'none';
+          canvas.style.display = 'block';
+          instructions.style.display = 'block';
+
+          if (!rocketGame) {
+            rocketGame = new RocketShip(canvas);
+          }
+        });
+      </script>
+
+    </section>
+
+
+
+
+
+
     <footer>
       <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
       </p>
