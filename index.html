@@ -458,8 +458,11 @@
             this.maxStars = 3;
             this.binaryStars = [];
             this.maxBinaryStars = 2;
+            this.blackHoles = [];
+            this.maxBlackHoles = 2;
             this.hasMoved = false;
             this.instructionPopup = null;
+            this.gameOver = false;
 
             this.setupRocket();
             this.setupControls();
@@ -469,27 +472,24 @@
             this.spawnEnemies();
             this.spawnStars();
             this.spawnBinaryStars();
+            this.spawnBlackHoles();
             this.gameLoop();
           }
 
           setupRocket() {
-            // Create clean, proper rocket ship design
+            // Create simple green triangle rocket
             this.rocket = document.createElement('div');
             this.rocket.id = 'rocketShip';
             this.rocket.style.cssText = `
               position: fixed;
               width: 0;
               height: 0;
+              border-left: 40px solid #4ecdc4;
+              border-top: 20px solid transparent;
+              border-bottom: 20px solid transparent;
               z-index: 10000;
               transform-origin: center;
               filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
-            `;
-
-            // Simple, clean rocket design
-            this.rocket.innerHTML = `
-              <div style="position: absolute; width: 0; height: 0; border-left: 40px solid #4ecdc4; border-top: 20px solid transparent; border-bottom: 20px solid transparent;"></div>
-              <!-- Rocket window -->
-              <div style="position: absolute; top: -8px; left: -30px; width: 12px; height: 12px; background: #3498db; border-radius: 50%; border: 2px solid #2980b9;"></div>
             `;
 
             document.body.appendChild(this.rocket);
@@ -655,18 +655,7 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 20px #ffd700;
-              animation: twinkle 1.5s infinite alternate;
             `;
-
-            // Add twinkle animation
-            const style = document.createElement('style');
-            style.textContent = `
-              @keyframes twinkle {
-                0% { opacity: 0.7; transform: scale(1); }
-                100% { opacity: 1; transform: scale(1.1); }
-              }
-            `;
-            document.head.appendChild(style);
 
             // Random position
             const x = Math.random() * (window.innerWidth - 80) + 40;
@@ -713,7 +702,6 @@
             const orbitRadius = 30 + Math.random() * 40; // 30-70px separation
             const orbitSpeed = 0.01 + (0.03 * (30 / orbitRadius)); // Slower for wider separations
             const startAngle = Math.random() * Math.PI * 2;
-            const isBlackHole = Math.random() < 0.5; // 50% chance of black hole
 
             // Create big red star
             const star1 = document.createElement('div');
@@ -727,40 +715,21 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 25px #ff4444;
-              animation: twinkle 2s infinite alternate;
             `;
 
-            // Create small companion (white dwarf or black hole)
+            // Create small white star
             const star2 = document.createElement('div');
-            let star2Size;
-            if (isBlackHole) {
-              // Simple black hole without accretion disk
-              star2Size = 20;
-              star2.style.cssText = `
-                position: fixed;
-                width: ${star2Size}px;
-                height: ${star2Size}px;
-                background: radial-gradient(circle, #000000, #1a1a1a);
-                border: 2px solid #333333;
-                border-radius: 50%;
-                z-index: 9996;
-                box-shadow: 0 0 20px #000000;
-              `;
-            } else {
-              // White dwarf
-              star2Size = 18;
-              star2.style.cssText = `
-                position: fixed;
-                width: ${star2Size}px;
-                height: ${star2Size}px;
-                background: radial-gradient(circle, #ffffff, #f0f0f0);
-                border: 2px solid #cccccc;
-                border-radius: 50%;
-                z-index: 9996;
-                box-shadow: 0 0 15px #ffffff;
-                animation: twinkle 2s infinite alternate;
-              `;
-            }
+            const star2Size = 18;
+            star2.style.cssText = `
+              position: fixed;
+              width: ${star2Size}px;
+              height: ${star2Size}px;
+              background: radial-gradient(circle, #ffffff, #f0f0f0);
+              border: 2px solid #cccccc;
+              border-radius: 50%;
+              z-index: 9996;
+              box-shadow: 0 0 15px #ffffff;
+            `;
 
             document.body.appendChild(star1);
             document.body.appendChild(star2);
@@ -772,9 +741,43 @@
               orbitSpeed,
               angle: startAngle,
               star1: { element: star1, x: 0, y: 0, size: star1Size/2 },
-              star2: { element: star2, x: 0, y: 0, size: star2Size/2 },
-              isBlackHole: isBlackHole
+              star2: { element: star2, x: 0, y: 0, size: star2Size/2 }
             });
+          }
+
+          spawnBlackHoles() {
+            for (let i = 0; i < this.maxBlackHoles; i++) {
+              this.spawnBlackHole();
+            }
+          }
+
+          spawnBlackHole() {
+            const blackHole = document.createElement('div');
+            const size = 25 + Math.random() * 15; // 25-40px
+            blackHole.style.cssText = `
+              position: fixed;
+              width: ${size}px;
+              height: ${size}px;
+              background: radial-gradient(circle, #000000, #1a1a1a);
+              border: 2px solid #333333;
+              border-radius: 50%;
+              z-index: 9996;
+              box-shadow: 0 0 20px #000000, 0 0 40px #4a4a4a;
+            `;
+
+            // Random position
+            const x = Math.random() * (window.innerWidth - 80) + 40;
+            const y = Math.random() * (window.innerHeight - 80) + 40;
+
+            // Random velocity for slow movement
+            const vx = (Math.random() - 0.5) * 0.4; // -0.2 to 0.2 pixels per frame
+            const vy = (Math.random() - 0.5) * 0.4; // -0.2 to 0.2 pixels per frame
+
+            blackHole.style.left = x + 'px';
+            blackHole.style.top = y + 'px';
+            document.body.appendChild(blackHole);
+
+            this.blackHoles.push({ x, y, vx, vy, element: blackHole, size: size/2 });
           }
 
           updateBinaryStars() {
@@ -793,6 +796,24 @@
               binary.star1.element.style.top = binary.star1.y + 'px';
               binary.star2.element.style.left = binary.star2.x + 'px';
               binary.star2.element.style.top = binary.star2.y + 'px';
+            });
+          }
+
+          updateBlackHoles() {
+            this.blackHoles.forEach((blackHole, index) => {
+              // Update position
+              blackHole.x += blackHole.vx;
+              blackHole.y += blackHole.vy;
+
+              // Wrap around screen edges
+              if (blackHole.x < -50) blackHole.x = window.innerWidth + 50;
+              if (blackHole.x > window.innerWidth + 50) blackHole.x = -50;
+              if (blackHole.y < -50) blackHole.y = window.innerHeight + 50;
+              if (blackHole.y > window.innerHeight + 50) blackHole.y = -50;
+
+              // Update element position
+              blackHole.element.style.left = blackHole.x + 'px';
+              blackHole.element.style.top = blackHole.y + 'px';
             });
           }
 
@@ -838,14 +859,20 @@
           }
 
           update() {
-            // Check if ship has moved
-            if ((this.keys['ArrowLeft'] || this.keys['ArrowRight'] || this.keys['ArrowUp']) && !this.hasMoved) {
-              this.hasMoved = true;
-              if (this.instructionPopup) {
-                this.instructionPopup.remove();
-                this.instructionPopup = null;
+            if (this.gameOver) return;
+
+            // Check black hole collisions first
+            this.blackHoles.forEach((blackHole) => {
+              const dx = this.x - blackHole.x;
+              const dy = this.y - blackHole.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance < blackHole.size) {
+                this.gameOver = true;
+                this.showGameOverScreen();
+                return;
               }
-            }
+            });
 
             // Rotation
             if (this.keys['ArrowLeft']) this.rotation -= this.rotationSpeed;
@@ -854,7 +881,6 @@
             // Thrust
             if (this.keys['ArrowUp']) {
               this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
-              this.addEngineParticles();
             } else {
               this.thrust = Math.max(this.thrust - this.thrustAccel * 2, 0);
             }
@@ -887,8 +913,9 @@
             this.bullets.forEach((bullet, index) => {
               bullet.x += bullet.vx;
               bullet.y += bullet.vy;
-              bullet.life--;
-              if (bullet.life <= 0) {
+
+              if (bullet.x < -10 || bullet.x > window.innerWidth + 10 ||
+                  bullet.y < -10 || bullet.y > window.innerHeight + 10) {
                 bullet.element.remove();
                 this.bullets.splice(index, 1);
               } else {
@@ -902,6 +929,7 @@
               particle.x += particle.vx;
               particle.y += particle.vy;
               particle.life--;
+
               if (particle.life <= 0) {
                 particle.element.remove();
                 this.engineParticles.splice(index, 1);
@@ -929,12 +957,14 @@
                 const dx = bullet.x - enemy.x;
                 const dy = bullet.y - enemy.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
+
                 if (distance < 25) {
-                  this.score += 100;
-                  enemy.element.remove();
-                  this.enemies.splice(index, 1);
+                  // Enemy hit
                   bullet.element.remove();
                   this.bullets.splice(bulletIndex, 1);
+                  enemy.element.remove();
+                  this.enemies.splice(index, 1);
+                  this.score += 50;
                   this.updateScoreDisplay();
                 }
               });
@@ -948,12 +978,13 @@
               const dx = this.x - star.x;
               const dy = this.y - star.y;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              if (distance < 35 + star.size) {
+
+              if (distance < star.size) {
                 // Collect star
-                this.score += 100;
-                this.showScorePopup(star.x, star.y, 100, '#ffff00');
                 star.element.remove();
                 this.stars.splice(index, 1);
+                this.score += 100;
+                this.showScorePopup(star.x, star.y, 100);
                 this.updateScoreDisplay();
 
                 // Spawn new star
@@ -976,13 +1007,13 @@
               // Use actual star sizes for collision detection
               if (distance1 < binary.star1.size || distance2 < binary.star2.size) {
                 // Collect binary star system
-                const points = binary.isBlackHole ? 250 : 250; // Both worth 250 points
+                const points = 250; // Both worth 250 points
                 this.score += points;
 
                 // Show score popup
-                const popupX = binary.isBlackHole ? binary.star2.x : binary.star1.x;
-                const popupY = binary.isBlackHole ? binary.star2.y : binary.star1.y;
-                this.showScorePopup(popupX, popupY, points, binary.isBlackHole ? '#ff6b6b' : '#ffff00');
+                const popupX = binary.star1.x;
+                const popupY = binary.star1.y;
+                this.showScorePopup(popupX, popupY, points, '#ffff00');
 
                 // Remove stars
                 binary.star1.element.remove();
@@ -998,9 +1029,12 @@
             // Update binary stars
             this.updateBinaryStars();
 
+            // Update black holes
+            this.updateBlackHoles();
+
             // Spawn new enemies
             this.spawnTimer += 16;
-            if (this.spawnTimer > this.spawnRate) {
+            if (this.spawnTimer >= this.spawnRate) {
               this.spawnEnemy();
               this.spawnTimer = 0;
             }
@@ -1133,34 +1167,109 @@
             requestAnimationFrame(() => this.gameLoop());
           }
 
+          showGameOverScreen() {
+            // Hide game elements
+            this.rocket.style.display = 'none';
+            this.scoreDisplay.style.display = 'none';
+            this.escNote.style.display = 'none';
+
+            // Create game over screen
+            const gameOverScreen = document.createElement('div');
+            gameOverScreen.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.9);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              z-index: 10002;
+              color: white;
+              font-family: Arial, sans-serif;
+              text-align: center;
+            `;
+
+            gameOverScreen.innerHTML = `
+              <div style="font-size: 48px; margin-bottom: 20px; color: #e74c3c;">💀</div>
+              <div style="font-size: 36px; margin-bottom: 20px; font-weight: bold;">Game Over!</div>
+              <div style="font-size: 24px; margin-bottom: 30px; color: #e74c3c;">You fell into a black hole!</div>
+              <div style="font-size: 20px; margin-bottom: 20px;">Final Score: ${this.score}</div>
+              <div style="font-size: 16px; opacity: 0.8; margin-bottom: 30px;">Press Esc to close</div>
+            `;
+
+            document.body.appendChild(gameOverScreen);
+
+            // Add escape key listener for game over screen
+            const gameOverKeyListener = (e) => {
+              if (e.code === 'Escape') {
+                gameOverScreen.remove();
+                this.hideGame();
+              }
+            };
+            document.addEventListener('keydown', gameOverKeyListener);
+
+            // Store reference to remove listener later
+            this.gameOverKeyListener = gameOverKeyListener;
+          }
+
           hideGame() {
-            // Unlock scrolling
-            this.unlockScroll();
+            // Remove game over key listener if it exists
+            if (this.gameOverKeyListener) {
+              document.removeEventListener('keydown', this.gameOverKeyListener);
+              this.gameOverKeyListener = null;
+            }
 
             // Remove all game elements
             if (this.rocket) this.rocket.remove();
-            if (this.instructionPopup) this.instructionPopup.remove();
             if (this.scoreDisplay) this.scoreDisplay.remove();
             if (this.escNote) this.escNote.remove();
+
+            // Remove all bullets
             this.bullets.forEach(bullet => bullet.element.remove());
-            this.engineParticles.forEach(particle => particle.element.remove());
+            this.bullets = [];
+
+            // Remove all enemies
             this.enemies.forEach(enemy => enemy.element.remove());
+            this.enemies = [];
+
+            // Remove all stars
             this.stars.forEach(star => star.element.remove());
+            this.stars = [];
+
+            // Remove all binary stars
             this.binaryStars.forEach(binary => {
               binary.star1.element.remove();
               binary.star2.element.remove();
             });
+            this.binaryStars = [];
+
+            // Remove all black holes
+            this.blackHoles.forEach(blackHole => blackHole.element.remove());
+            this.blackHoles = [];
+
+            // Remove all engine particles
+            this.engineParticles.forEach(particle => particle.element.remove());
+            this.engineParticles = [];
+
+            // Remove instruction popup
+            if (this.instructionPopup) this.instructionPopup.remove();
+
+            // Remove game over screen if it exists
+            const gameOverScreen = document.querySelector('[style*="z-index: 10002"]');
+            if (gameOverScreen) gameOverScreen.remove();
+
+            // Unlock scroll
+            this.unlockScroll();
 
             // Reset game state
-            this.bullets = [];
-            this.engineParticles = [];
-            this.enemies = [];
-            this.stars = [];
-            this.binaryStars = [];
-            this.hasMoved = false;
+            this.gameOver = false;
+            this.score = 0;
 
-            // Show button again
-            document.getElementById('rocketBtn').style.display = 'inline-block';
+            // Show launch button again
+            document.getElementById('rocketBtn').style.display = 'inline';
           }
         }
 
