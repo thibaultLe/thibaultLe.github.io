@@ -681,7 +681,8 @@
             star.style.top = y + 'px';
             document.body.appendChild(star);
 
-            this.stars.push({ x, y, vx, vy, element: star, size: size/2 });
+            // Bigger hitbox for stars (1.5x the visual size, like black holes)
+            this.stars.push({ x, y, vx, vy, element: star, size: (size/2) * 1.5 });
           }
 
           updateStars() {
@@ -895,8 +896,8 @@
             if (this.keys['ArrowUp']) {
               this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
 
-              // Add more engine particles when thrusting
-              if (Math.random() < 0.6) { // Increased from 0.3 to 0.6 (60% chance per frame)
+              // Add more engine particles when thrusting (only if game is active)
+              if (!this.gameOver && Math.random() < 0.6) { // Check if game is not over
                 this.addEngineParticle();
               }
             } else {
@@ -1107,9 +1108,19 @@
             const particleX = this.x - Math.cos(this.rotation) * 40;
             const particleY = this.y - Math.sin(this.rotation) * 40;
 
-            // Calculate particle velocity (opposite to rocket direction)
-            const particleVx = -Math.cos(this.rotation) * (0.5 + Math.random() * 0.5);
-            const particleVy = -Math.sin(this.rotation) * (0.5 + Math.random() * 0.5);
+            // Add random spread to particle position (perpendicular to rocket direction)
+            const spreadAmount = (Math.random() - 0.5) * 15; // ±7.5px spread
+            const spreadX = Math.sin(this.rotation) * spreadAmount;
+            const spreadY = -Math.cos(this.rotation) * spreadAmount;
+
+            const finalParticleX = particleX + spreadX;
+            const finalParticleY = particleY + spreadY;
+
+            // Calculate particle velocity (opposite to rocket direction with some spread)
+            const baseSpeed = 0.5 + Math.random() * 0.5;
+            const velocitySpread = (Math.random() - 0.5) * 0.3; // ±0.15 spread
+            const particleVx = -Math.cos(this.rotation + velocitySpread) * baseSpeed;
+            const particleVy = -Math.sin(this.rotation + velocitySpread) * baseSpeed;
 
             // Create particle element
             const particle = document.createElement('div');
@@ -1123,14 +1134,14 @@
               box-shadow: 0 0 8px #ff6b6b;
             `;
 
-            particle.style.left = particleX + 'px';
-            particle.style.top = particleY + 'px';
+            particle.style.left = finalParticleX + 'px';
+            particle.style.top = finalParticleY + 'px';
             document.body.appendChild(particle);
 
             // Add particle to array
             this.engineParticles.push({
-              x: particleX,
-              y: particleY,
+              x: finalParticleX,
+              y: finalParticleY,
               vx: particleVx,
               vy: particleVy,
               life: 20,
