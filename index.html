@@ -881,7 +881,8 @@
               const dy = this.y - blackHole.y;
               const distance = Math.sqrt(dx * dx + dy * dy);
 
-              if (distance < blackHole.size) {
+              // Rocket hitbox is 20px radius (matches the visual triangle size)
+              if (distance < 20) {
                 this.gameOver = true;
                 this.showGameOverScreen();
                 return;
@@ -1007,7 +1008,8 @@
               const dy = this.y - star.y;
               const distance = Math.sqrt(dx * dx + dy * dy);
 
-              if (distance < star.size) {
+              // Rocket hitbox is 20px radius (matches the visual triangle size)
+              if (distance < star.size + 20) {
                 // Collect star
                 star.element.remove();
                 this.stars.splice(index, 1);
@@ -1030,10 +1032,10 @@
               // Check collision with second star
               const dx2 = this.x - binary.star2.x;
               const dy2 = this.y - binary.star2.y;
-              const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+              const distance2 = Math.sqrt(dx2 * dy2 + dy2 * dy2);
 
-              // Use actual star sizes for collision detection
-              if (distance1 < binary.star1.size || distance2 < binary.star2.size) {
+              // Use actual star sizes + rocket hitbox for collision detection
+              if (distance1 < binary.star1.size + 20 || distance2 < binary.star2.size + 20) {
                 // Collect binary star system
                 const points = 250; // Both worth 250 points
                 this.score += points;
