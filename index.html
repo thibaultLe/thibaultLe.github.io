@@ -441,10 +441,10 @@
             this.vy = 0;
             this.rotation = 0;
             this.thrust = 0;
-            this.maxThrust = 0.4; // Reduced from 0.8
+            this.maxThrust = 0.6; // Increased from 0.4 for slightly faster movement
             this.friction = 0.95; // Increased from 0.98 for more control
             this.rotationSpeed = 0.08; // Reduced from 0.12
-            this.thrustAccel = 0.015; // Reduced from 0.03
+            this.thrustAccel = 0.02; // Increased from 0.015 for more responsive thrust
             this.engineParticles = [];
             this.bullets = [];
             this.lastShot = 0;
@@ -473,24 +473,31 @@
           }
 
           setupRocket() {
-            // Create bigger rocket element with triangular shape
+            // Create more realistic rocket ship with multiple parts
             this.rocket = document.createElement('div');
             this.rocket.id = 'rocketShip';
             this.rocket.style.cssText = `
               position: fixed;
               width: 0;
               height: 0;
-              border-left: 40px solid #4ecdc4;
-              border-top: 20px solid transparent;
-              border-bottom: 20px solid transparent;
               z-index: 10000;
               transform-origin: center;
               filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
             `;
 
-            // Add rocket window
+            // Create rocket body (main triangle)
             this.rocket.innerHTML = `
-              <div style="position: absolute; top: -8px; left: -30px; width: 12px; height: 12px; background: #3498db; border-radius: 50%; border: 2px solid #2980b9;"></div>
+              <div style="position: absolute; width: 0; height: 0; border-left: 45px solid #4ecdc4; border-top: 25px solid transparent; border-bottom: 25px solid transparent;"></div>
+              <!-- Rocket nose cone -->
+              <div style="position: absolute; width: 0; height: 0; border-left: 15px solid #e74c3c; border-top: 15px solid transparent; border-bottom: 15px solid transparent; left: 45px; top: 5px;"></div>
+              <!-- Rocket window -->
+              <div style="position: absolute; top: -10px; left: -35px; width: 14px; height: 14px; background: #3498db; border-radius: 50%; border: 2px solid #2980b9; box-shadow: inset 0 0 5px rgba(255,255,255,0.3);"></div>
+              <!-- Rocket fins -->
+              <div style="position: absolute; width: 0; height: 0; border-left: 20px solid #34495e; border-top: 15px solid transparent; border-bottom: 15px solid transparent; left: -15px; top: 5px; transform: rotate(90deg);"></div>
+              <div style="position: absolute; width: 0; height: 0; border-left: 20px solid #34495e; border-top: 15px solid transparent; border-bottom: 15px solid transparent; left: -15px; top: -5px; transform: rotate(90deg);"></div>
+              <!-- Engine exhaust -->
+              <div style="position: absolute; width: 0; height: 0; border-left: 8px solid #f39c12; border-top: 8px solid transparent; border-bottom: 8px solid transparent; left: -8px; top: 8px;"></div>
+              <div style="position: absolute; width: 0; height: 0; border-left: 8px solid #f39c12; border-top: 8px solid transparent; border-bottom: 8px solid transparent; left: -8px; top: -8px;"></div>
             `;
 
             document.body.appendChild(this.rocket);
@@ -714,6 +721,7 @@
             const orbitRadius = 30 + Math.random() * 40; // 30-70px separation
             const orbitSpeed = 0.01 + (0.03 * (30 / orbitRadius)); // Slower for wider separations
             const startAngle = Math.random() * Math.PI * 2;
+            const isBlackHole = Math.random() < 0.5; // 50% chance of black hole
 
             // Create big red star
             const star1 = document.createElement('div');
@@ -729,19 +737,65 @@
               animation: twinkle 2s infinite alternate;
             `;
 
-            // Create small white star
+            // Create small companion (white dwarf or black hole)
             const star2 = document.createElement('div');
-            star2.style.cssText = `
-              position: fixed;
-              width: 18px;
-              height: 18px;
-              background: radial-gradient(circle, #ffffff, #f0f0f0);
-              border: 2px solid #cccccc;
-              border-radius: 50%;
-              z-index: 9996;
-              box-shadow: 0 0 15px #ffffff;
-              animation: twinkle 2s infinite alternate;
-            `;
+            if (isBlackHole) {
+              // Black hole with accretion disk effect
+              star2.style.cssText = `
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                background: radial-gradient(circle, #000000, #1a1a1a);
+                border: 2px solid #333333;
+                border-radius: 50%;
+                z-index: 9996;
+                box-shadow: 0 0 20px #000000, 0 0 40px #4a4a4a;
+                animation: blackHolePulse 3s infinite alternate;
+              `;
+
+              // Add accretion disk ring
+              const accretionDisk = document.createElement('div');
+              accretionDisk.style.cssText = `
+                position: absolute;
+                width: 32px;
+                height: 32px;
+                border: 3px solid transparent;
+                border-top: 3px solid #ff6b6b;
+                border-right: 3px solid #ff6b6b;
+                border-radius: 50%;
+                top: -6px;
+                left: -6px;
+                animation: rotate 4s linear infinite;
+              `;
+              star2.appendChild(accretionDisk);
+
+              // Add rotation animation CSS
+              const style = document.createElement('style');
+              style.textContent = `
+                @keyframes rotate {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
+                }
+                @keyframes blackHolePulse {
+                  0% { box-shadow: 0 0 20px #000000, 0 0 40px #4a4a4a; }
+                  100% { box-shadow: 0 0 30px #000000, 0 0 50px #4a4a4a; }
+                }
+              `;
+              document.head.appendChild(style);
+            } else {
+              // White dwarf
+              star2.style.cssText = `
+                position: fixed;
+                width: 18px;
+                height: 18px;
+                background: radial-gradient(circle, #ffffff, #f0f0f0);
+                border: 2px solid #cccccc;
+                border-radius: 50%;
+                z-index: 9996;
+                box-shadow: 0 0 15px #ffffff;
+                animation: twinkle 2s infinite alternate;
+              `;
+            }
 
             document.body.appendChild(star1);
             document.body.appendChild(star2);
@@ -753,7 +807,8 @@
               orbitSpeed,
               angle: startAngle,
               star1: { element: star1, x: 0, y: 0 },
-              star2: { element: star2, x: 0, y: 0 }
+              star2: { element: star2, x: 0, y: 0 },
+              isBlackHole: isBlackHole
             });
           }
 
