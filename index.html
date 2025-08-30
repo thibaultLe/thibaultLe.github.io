@@ -519,7 +519,8 @@
             this.instructionPopup.innerHTML = `
               <div style="margin-bottom: 15px;">🚀</div>
               <div style="font-weight: bold; margin-bottom: 10px;">Welcome to Rocket Ship!</div>
-              <div>Use Arrow Keys to steer</div>
+              <div style="margin-bottom: 15px;">Use Arrow Keys to steer</div>
+              <div style="font-size: 16px; margin-bottom: 10px; color: #4ecdc4;">Reach as many stars as possible, without falling into a black hole!</div>
               <div style="font-size: 14px; margin-top: 10px; opacity: 0.8;">Start moving to begin!</div>
             `;
 
@@ -655,15 +656,26 @@
               border-radius: 50%;
               z-index: 9996;
               box-shadow: 0 0 20px #ffd700;
+              animation: twinkle 1.5s infinite alternate;
             `;
+
+            // Add twinkle animation
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes twinkle {
+                0% { opacity: 0.7; transform: scale(1); }
+                100% { opacity: 1; transform: scale(1.1); }
+              }
+            `;
+            document.head.appendChild(style);
 
             // Random position
             const x = Math.random() * (window.innerWidth - 80) + 40;
             const y = Math.random() * (window.innerHeight - 80) + 40;
 
-            // Random velocity for slow movement
-            const vx = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
-            const vy = (Math.random() - 0.5) * 0.5; // -0.25 to 0.25 pixels per frame
+            // Random velocity for faster movement
+            const vx = (Math.random() - 0.5) * 1.2; // -0.6 to 0.6 pixels per frame (increased from 0.5)
+            const vy = (Math.random() - 0.5) * 1.2; // -0.6 to 0.6 pixels per frame (increased from 0.5)
 
             star.style.left = x + 'px';
             star.style.top = y + 'px';
@@ -769,15 +781,16 @@
             const x = Math.random() * (window.innerWidth - 80) + 40;
             const y = Math.random() * (window.innerHeight - 80) + 40;
 
-            // Random velocity for slow movement
-            const vx = (Math.random() - 0.5) * 0.4; // -0.2 to 0.2 pixels per frame
-            const vy = (Math.random() - 0.5) * 0.4; // -0.2 to 0.2 pixels per frame
+            // Random velocity for faster movement
+            const vx = (Math.random() - 0.5) * 1.0; // -0.5 to 0.5 pixels per frame (increased from 0.4)
+            const vy = (Math.random() - 0.5) * 1.0; // -0.5 to 0.5 pixels per frame (increased from 0.4)
 
             blackHole.style.left = x + 'px';
             blackHole.style.top = y + 'px';
             document.body.appendChild(blackHole);
 
-            this.blackHoles.push({ x, y, vx, vy, element: blackHole, size: size/2 });
+            // Bigger hitbox for black holes (1.5x the visual size)
+            this.blackHoles.push({ x, y, vx, vy, element: blackHole, size: (size/2) * 1.5 });
           }
 
           updateBinaryStars() {
@@ -882,8 +895,8 @@
             if (this.keys['ArrowUp']) {
               this.thrust = Math.min(this.thrust + this.thrustAccel, this.maxThrust);
 
-              // Add engine particles when thrusting
-              if (Math.random() < 0.3) { // 30% chance per frame
+              // Add more engine particles when thrusting
+              if (Math.random() < 0.6) { // Increased from 0.3 to 0.6 (60% chance per frame)
                 this.addEngineParticle();
               }
             } else {
