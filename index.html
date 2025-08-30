@@ -1032,7 +1032,7 @@
               // Check collision with second star
               const dx2 = this.x - binary.star2.x;
               const dy2 = this.y - binary.star2.y;
-              const distance2 = Math.sqrt(dx2 * dy2 + dy2 * dy2);
+              const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2); // Fixed: was dx2 * dy2
 
               // Use actual star sizes + rocket hitbox for collision detection
               if (distance1 < binary.star1.size + 20 || distance2 < binary.star2.size + 20) {
@@ -1295,7 +1295,7 @@
             this.blackHoles.forEach(blackHole => blackHole.element.remove());
             this.blackHoles = [];
 
-            // Remove all engine particles
+            // Remove all engine particles (this was the issue!)
             this.engineParticles.forEach(particle => particle.element.remove());
             this.engineParticles = [];
 
@@ -1312,6 +1312,7 @@
             // Reset game state
             this.gameOver = false;
             this.score = 0;
+            this.hasMoved = false; // Reset movement flag
 
             // Show launch button again
             document.getElementById('rocketBtn').style.display = 'inline';
