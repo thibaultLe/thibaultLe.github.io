@@ -225,6 +225,67 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
 
+    /* Project tiles */
+    .project-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 0 0 20px;
+      list-style: none;
+      padding: 0;
+    }
+    .project-tile {
+      background: var(--background-color);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    [data-theme="dark"] .project-tile {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .project-tile:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+    [data-theme="dark"] .project-tile:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+    .project-tile.is-open {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+    .project-tile-thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .project-tile-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .project-tile.is-open .project-tile-body {
+      max-height: 500px;
+    }
+    .project-tile-content {
+      padding: 1rem;
+      font-size: 15px;
+      line-height: 1.5;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    [data-theme="dark"] .project-tile-content {
+      border-top-color: rgba(255, 255, 255, 0.15);
+    }
+    .project-tile-content a {
+      color: var(--text-color);
+    }
+    [data-theme="dark"] .project-tile-content a {
+      color: #63c0f5;
+    }
+
     /* Progress bar styles */
     .progress {
       position: relative;
@@ -325,17 +386,60 @@
       With the incoming wave of data from the current and future astronomical campaigns, astrophysics needs new methodologies.  </p>
 
       <h2>Past projects</h2>
-      <ul>
-        <li>During the first year of my PhD, we showed that when stars throw mass onto a companion star that is orbiting closely, this companion accretes a lot of the transferred mass. This is in direct conflict with commonly used theoretical models, which is why it was surprising! <a href="https://doi.org/10.48550/arXiv.2505.14780" title="https://doi.org/10.48550/arXiv.2505.14780">[doi.org/10.48550/arXiv.2505.14780]</a>.</li>
-        <li>At NASA Goddard Space Flight Center, I did research on neutron star X-ray and Gamma-ray emission. In particular, we inferred the mass, radius and magnetic field geometry of neutron stars from <a href="https://science.nasa.gov/mission/nicer/" title="NICER">NICER</a>
-          and <a href="https://fermi.gsfc.nasa.gov/" title="Fermi">Fermi</a> data using neural networks emulators, speeding up simulations by 7 orders of magnitude at a minimal loss in accuracy.  </li>
-        <li>At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre,
-          eliminating the need to make assumptions on the physical composition of the Dark Matter distribution
-          <a href="https://doi.org/10.1051/0004-6361/202347738" title="doi.org/10.1051/0004-6361/202347738">[doi.org/10.1051/0004-6361/202347738]</a>. </li>
-        <li>As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" title="https://scipost.org/SciPostPhys.13.4.097/pdf">[SciPostPhys.13.4.097]</a>. </li>
+      <ul class="project-tiles">
+        <li class="project-tile" data-project>
+          <img class="project-tile-thumb" src="/assets/demink.png" alt="Mass transfer in binaries">
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              During the first year of my PhD, we showed that when stars throw mass onto a companion star that is orbiting closely, this companion accretes a lot of the transferred mass. This is in direct conflict with commonly used theoretical models, which is why it was surprising! <a href="https://doi.org/10.48550/arXiv.2505.14780" target="_blank" rel="noopener">[doi.org/10.48550/arXiv.2505.14780]</a>.
+            </div>
+          </div>
+        </li>
+        <li class="project-tile" data-project>
+          <img class="project-tile-thumb" src="/assets/kala.png" alt="Neutron star inference">
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              At NASA Goddard Space Flight Center, I did research on neutron star X-ray and Gamma-ray emission. In particular, we inferred the mass, radius and magnetic field geometry of neutron stars from <a href="https://science.nasa.gov/mission/nicer/" target="_blank" rel="noopener">NICER</a> and <a href="https://fermi.gsfc.nasa.gov/" target="_blank" rel="noopener">Fermi</a> data using neural networks emulators, speeding up simulations by 7 orders of magnitude at a minimal loss in accuracy.
+            </div>
+          </div>
+        </li>
+        <li class="project-tile" data-project>
+          <img class="project-tile-thumb" src="/assets/dudal.png" alt="Dark Matter reconstruction">
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre, eliminating the need to make assumptions on the physical composition of the Dark Matter distribution <a href="https://doi.org/10.1051/0004-6361/202347738" target="_blank" rel="noopener">[doi.org/10.1051/0004-6361/202347738]</a>.
+            </div>
+          </div>
+        </li>
+        <li class="project-tile" data-project>
+          <img class="project-tile-thumb" src="/assets/heissel.png" alt="Spectral functions">
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" target="_blank" rel="noopener">[SciPostPhys.13.4.097]</a>.
+            </div>
+          </div>
+        </li>
       </ul>
+      <script>
+        document.querySelectorAll('.project-tile[data-project]').forEach(function(tile) {
+          tile.addEventListener('click', function(e) {
+            if (e.target.closest('a')) return;
+            this.classList.toggle('is-open');
+          });
+        });
+      </script>
 
       <h2>Past talks</h2>
+      <p>Seminar talk in the IAU Working group on B stars:</p>
+      <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%; margin-bottom: 1rem;">
+        <iframe
+          src="https://www.youtube.com/embed/BAhX5P8xdm8?start=890"
+          title="December 2025 seminar - Ilfa Gabitova and Thibault Lechien"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+          allowfullscreen>
+        </iframe>
+      </div>
+
       <p>Talk at the Center for Astrophysics | Harvard & Smithsonian as part of the AstroAI workshop:</p>
       <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%; margin-bottom: 1rem;">
         <iframe
