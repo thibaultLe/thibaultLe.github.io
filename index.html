@@ -255,34 +255,76 @@
     .project-tile.is-open {
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
-    .project-tile-thumb {
+    .project-tile-thumb-wrap {
+      position: relative;
       display: block;
       width: 100%;
       aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+    .project-tile-thumb {
+      display: block;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       pointer-events: none;
     }
+    .project-tile-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.5rem 0.6rem;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .project-tile:hover .project-tile-title {
+      opacity: 1;
+    }
     .project-tile-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease;
+      display: none;
     }
-    .project-tile.is-open .project-tile-body {
-      max-height: 500px;
+    .project-popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: transparent;
+      display: none;
     }
-    .project-tile-content {
-      padding: 1rem;
+    .project-popup-overlay.is-visible {
+      display: block;
+    }
+    .project-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      max-width: 420px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1.25rem;
+      background: var(--background-color);
+      color: var(--text-color);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
       font-size: 15px;
       line-height: 1.5;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
     }
-    [data-theme="dark"] .project-tile-content {
-      border-top-color: rgba(255, 255, 255, 0.15);
+    [data-theme="dark"] .project-popup {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     }
-    .project-tile-content a {
+    .project-popup a {
       color: var(--text-color);
     }
-    [data-theme="dark"] .project-tile-content a {
+    [data-theme="dark"] .project-popup a {
       color: #63c0f5;
     }
 
@@ -388,7 +430,10 @@
       <h2>Past projects</h2>
       <ul class="project-tiles">
         <li class="project-tile" data-project>
-          <img class="project-tile-thumb" src="/assets/demink.png" alt="Mass transfer in binaries">
+          <span class="project-tile-thumb-wrap">
+            <img class="project-tile-thumb" src="/assets/demink.png" alt="Mass transfer in binaries">
+            <span class="project-tile-title">Binary stars take what they get</span>
+          </span>
           <div class="project-tile-body">
             <div class="project-tile-content">
               During the first year of my PhD, we showed that when stars throw mass onto a companion star that is orbiting closely, this companion accretes a lot of the transferred mass. This is in direct conflict with commonly used theoretical models, which is why it was surprising! <a href="https://doi.org/10.48550/arXiv.2505.14780" target="_blank" rel="noopener">[doi.org/10.48550/arXiv.2505.14780]</a>.
@@ -396,7 +441,10 @@
           </div>
         </li>
         <li class="project-tile" data-project>
-          <img class="project-tile-thumb" src="/assets/kala.png" alt="Neutron star inference">
+          <span class="project-tile-thumb-wrap">
+            <img class="project-tile-thumb" src="/assets/kala.png" alt="Neutron star inference">
+            <span class="project-tile-title">Neutron stars in multiwavelength</span>
+          </span>
           <div class="project-tile-body">
             <div class="project-tile-content">
               At NASA Goddard Space Flight Center, I did research on neutron star X-ray and Gamma-ray emission. In particular, we inferred the mass, radius and magnetic field geometry of neutron stars from <a href="https://science.nasa.gov/mission/nicer/" target="_blank" rel="noopener">NICER</a> and <a href="https://fermi.gsfc.nasa.gov/" target="_blank" rel="noopener">Fermi</a> data using neural networks emulators, speeding up simulations by 7 orders of magnitude at a minimal loss in accuracy.
@@ -404,32 +452,63 @@
           </div>
         </li>
         <li class="project-tile" data-project>
-          <img class="project-tile-thumb" src="/assets/dudal.png" alt="Dark Matter reconstruction">
-          <div class="project-tile-body">
-            <div class="project-tile-content">
-              At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre, eliminating the need to make assumptions on the physical composition of the Dark Matter distribution <a href="https://doi.org/10.1051/0004-6361/202347738" target="_blank" rel="noopener">[doi.org/10.1051/0004-6361/202347738]</a>.
-            </div>
-          </div>
-        </li>
-        <li class="project-tile" data-project>
-          <img class="project-tile-thumb" src="/assets/heissel.png" alt="Spectral functions">
+          <span class="project-tile-thumb-wrap">
+            <img class="project-tile-thumb" src="/assets/heissel.png" alt="Spectral functions">
+            <span class="project-tile-title">Neural networks for confined particles</span>
+          </span>
           <div class="project-tile-body">
             <div class="project-tile-content">
               As part of an Honour's project at KU Leuven, I constructed a neural network to reconstruct spectral functions (and complex poles) of confined particles in high energy physics. This generalized upon previous approaches and achieved state of the art performance on genuine lattice data <a href="https://scipost.org/SciPostPhys.13.4.097/pdf" target="_blank" rel="noopener">[SciPostPhys.13.4.097]</a>.
             </div>
           </div>
         </li>
+        <li class="project-tile" data-project>
+          <span class="project-tile-thumb-wrap">
+            <img class="project-tile-thumb" src="/assets/dudal.png" alt="Dark Matter reconstruction">
+            <span class="project-tile-title">Dark matter in the Galactic Center</span>
+          </span>
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre, eliminating the need to make assumptions on the physical composition of the Dark Matter distribution <a href="https://doi.org/10.1051/0004-6361/202347738" target="_blank" rel="noopener">[doi.org/10.1051/0004-6361/202347738]</a>.
+            </div>
+          </div>
+        </li>
       </ul>
+      <div class="project-popup-overlay" id="projectPopupOverlay" aria-hidden="true"></div>
+      <div class="project-popup" id="projectPopup" role="dialog" aria-modal="true" style="display: none;"></div>
       <script>
-        document.querySelectorAll('.project-tile[data-project]').forEach(function(tile) {
-          tile.addEventListener('click', function(e) {
-            if (e.target.closest('a')) return;
-            this.classList.toggle('is-open');
+        (function() {
+          var overlay = document.getElementById('projectPopupOverlay');
+          var popup = document.getElementById('projectPopup');
+          function closePopup() {
+            overlay.classList.remove('is-visible');
+            popup.style.display = 'none';
+            popup.setAttribute('aria-hidden', 'true');
+          }
+          document.querySelectorAll('.project-tile[data-project]').forEach(function(tile) {
+            tile.addEventListener('click', function(e) {
+              if (e.target.closest('a')) return;
+              e.stopPropagation();
+              var content = this.querySelector('.project-tile-content');
+              if (content) {
+                popup.innerHTML = '';
+                popup.appendChild(content.cloneNode(true));
+                popup.style.display = 'block';
+                popup.removeAttribute('aria-hidden');
+                overlay.classList.add('is-visible');
+              }
+            });
           });
-        });
+          overlay.addEventListener('click', closePopup);
+          document.addEventListener('click', function(e) {
+            if (popup.style.display !== 'block') return;
+            if (e.target.closest('.project-popup a')) return;
+            closePopup();
+          });
+        })();
       </script>
 
-      <h2>Past talks</h2>
+      <h2>Some past talks</h2>
       <p>Seminar talk in the IAU Working group on B stars:</p>
       <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%; margin-bottom: 1rem;">
         <iframe
