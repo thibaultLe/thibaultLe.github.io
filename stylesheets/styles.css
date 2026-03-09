@@ -55,7 +55,8 @@ a:hover small {
 }
 
 .wrapper {
-  width:min(1400px, 95%);
+  width:1140px;
+  max-width:95%;
   margin:0 auto;
 }
 
@@ -170,7 +171,7 @@ header ul a strong {
 }
 
 section {
-  width:calc(100% - 300px);
+  width:500px;
   float:right;
   padding-bottom:50px;
 }
