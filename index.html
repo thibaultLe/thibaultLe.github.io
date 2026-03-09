@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="stylesheets/styles.css">
   <link rel="stylesheet" href="stylesheets/pygment_trac.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" href="/assets/IMG_1624.jpg" as="image">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
@@ -242,6 +243,7 @@
       overflow: hidden;
       cursor: pointer;
       transition: box-shadow 0.2s ease, transform 0.2s ease;
+      contain: layout style paint;
     }
     [data-theme="dark"] .project-tile {
       border-color: rgba(255, 255, 255, 0.2);
@@ -344,6 +346,7 @@
       position: relative;
       border-radius: 8px;
       overflow: hidden;
+      contain: layout style paint;
     }
     .hobby-tile-wrap {
       position: relative;
@@ -455,13 +458,13 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
 
   <div class="wrapper">
     <header>
       <h1>Thibault Lechien</h1>
       <p>PhD Student <br> Max Planck Institute for Astrophysics</p>
-      <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo">
+      <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo" width="300" height="300" fetchpriority="high">
       <p></p>
 
 
@@ -525,7 +528,7 @@
       <ul class="project-tiles">
         <li class="project-tile" data-project>
           <span class="project-tile-thumb-wrap">
-            <img class="project-tile-thumb" src="/assets/demink.png" alt="Mass transfer in binaries">
+            <img class="project-tile-thumb" src="/assets/demink.png" alt="Mass transfer in binaries" loading="lazy" width="200" height="150">
             <span class="project-tile-title">Binary stars take what they get</span>
           </span>
           <div class="project-tile-body">
@@ -536,7 +539,7 @@
         </li>
         <li class="project-tile" data-project>
           <span class="project-tile-thumb-wrap">
-            <img class="project-tile-thumb" src="/assets/kala.png" alt="Neutron star inference">
+            <img class="project-tile-thumb" src="/assets/kala.png" alt="Neutron star inference" loading="lazy" width="200" height="150">
             <span class="project-tile-title">Neutron stars in multiwavelength</span>
           </span>
           <div class="project-tile-body">
@@ -547,7 +550,7 @@
         </li>
         <li class="project-tile" data-project>
           <span class="project-tile-thumb-wrap">
-            <img class="project-tile-thumb" src="/assets/dudal.png" alt="Spectral functions">
+            <img class="project-tile-thumb" src="/assets/dudal.png" alt="Spectral functions" loading="lazy" width="200" height="150">
             <span class="project-tile-title">Neural networks for confined particles</span>
           </span>
           <div class="project-tile-body">
@@ -558,7 +561,7 @@
         </li>
         <li class="project-tile" data-project>
           <span class="project-tile-thumb-wrap">
-            <img class="project-tile-thumb" src="/assets/heissel.png" alt="Dark Matter reconstruction">
+            <img class="project-tile-thumb" src="/assets/heissel.png" alt="Dark Matter reconstruction" loading="lazy" width="200" height="150">
             <span class="project-tile-title">Dark matter in the Galactic Center</span>
           </span>
           <div class="project-tile-body">
@@ -579,19 +582,18 @@
             popup.style.display = 'none';
             popup.setAttribute('aria-hidden', 'true');
           }
-          document.querySelectorAll('.project-tile[data-project]').forEach(function(tile) {
-            tile.addEventListener('click', function(e) {
-              if (e.target.closest('a')) return;
-              e.stopPropagation();
-              var content = this.querySelector('.project-tile-content');
-              if (content) {
-                popup.innerHTML = '';
-                popup.appendChild(content.cloneNode(true));
-                popup.style.display = 'block';
-                popup.removeAttribute('aria-hidden');
-                overlay.classList.add('is-visible');
-              }
-            });
+          document.querySelector('.project-tiles').addEventListener('click', function(e) {
+            var tile = e.target.closest('.project-tile[data-project]');
+            if (!tile || e.target.closest('a')) return;
+            e.stopPropagation();
+            var content = tile.querySelector('.project-tile-content');
+            if (content) {
+              popup.innerHTML = '';
+              popup.appendChild(content.cloneNode(true));
+              popup.style.display = 'block';
+              popup.removeAttribute('aria-hidden');
+              overlay.classList.add('is-visible');
+            }
           });
           overlay.addEventListener('click', closePopup);
           document.addEventListener('click', function(e) {
@@ -609,7 +611,8 @@
           src="https://www.youtube.com/embed/BAhX5P8xdm8?start=890"
           title="December 2025 seminar - Ilfa Gabitova and Thibault Lechien"
           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-          allowfullscreen>
+          allowfullscreen
+          loading="lazy">
         </iframe>
       </div>
 
@@ -619,7 +622,8 @@
           src="https://www.youtube.com/embed/v-tlV2J0nCU?start=50"
           title="YouTube video"
           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-          allowfullscreen>
+          allowfullscreen
+          loading="lazy">
         </iframe>
       </div>
 
@@ -658,14 +662,8 @@
             }
         }
 
-        // Use requestAnimationFrame for smoother updates
-        function animate() {
-            updateProgress();
-            requestAnimationFrame(animate);
-        }
-
-        // Start the animation
-        animate();
+        updateProgress();
+        setInterval(updateProgress, 60000);
     </script>
 
       <!-- FuckUpMySite link -->
@@ -679,19 +677,19 @@
       <div class="hobbies-row">
         <div class="hobby-tile">
           <span class="hobby-tile-wrap">
-            <img src="/assets/hobbies/IMG_5897.jpg" alt="Hobby">
+            <img src="/assets/hobbies/IMG_5897.jpg" alt="Hobby" loading="lazy" width="200" height="267">
             <span class="hobby-tile-title">Skiing</span>
           </span>
         </div>
         <div class="hobby-tile">
           <span class="hobby-tile-wrap">
-            <img src="/assets/hobbies/IMG_8131.jpg" alt="Hobby">
+            <img src="/assets/hobbies/IMG_8131.jpg" alt="Hobby" loading="lazy" width="200" height="267">
             <span class="hobby-tile-title">Various watersports (wakeboarding, surfing, etc.)</span>
           </span>
         </div>
         <div class="hobby-tile">
           <span class="hobby-tile-wrap">
-            <img src="/assets/hobbies/IMG_8624.JPG" alt="Hobby">
+            <img src="/assets/hobbies/IMG_8624.JPG" alt="Hobby" loading="lazy" width="200" height="267">
             <span class="hobby-tile-title">Volleyball</span>
           </span>
         </div>
@@ -699,15 +697,15 @@
 
       <h2>Photography</h2>
       <div class="photography-grid">
-        <img src="/assets/photography/IMG_2582.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_7837.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_8821.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_8723.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_8796.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_8824.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_7931.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_9063.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_9908.jpg" alt="Photography">
+        <img src="/assets/photography/IMG_2582.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_7837.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_8821.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_8723.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_8796.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_8824.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_7931.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_9063.jpg" alt="Photography" loading="lazy" width="200" height="200">
+        <img src="/assets/photography/IMG_9908.jpg" alt="Photography" loading="lazy" width="200" height="200">
       </div>
       <div class="photo-popup-overlay" id="photoPopupOverlay" aria-hidden="true">
         <img id="photoPopupImg" src="" alt="Enlarged image">
@@ -725,11 +723,9 @@
             overlay.classList.add('is-visible');
             overlay.removeAttribute('aria-hidden');
           }
-          document.querySelectorAll('.photography-grid img').forEach(function(img) {
-            img.addEventListener('click', function() { openPopup(this.src); });
-          });
-          document.querySelectorAll('.hobby-tile-wrap img').forEach(function(img) {
-            img.addEventListener('click', function() { openPopup(this.src); });
+          document.querySelector('section').addEventListener('click', function(e) {
+            var img = e.target.closest('.photography-grid img, .hobby-tile-wrap img');
+            if (img) openPopup(img.src);
           });
           overlay.addEventListener('click', function(e) {
             if (e.target === overlay) closePhotoPopup();
@@ -752,7 +748,7 @@
       </p>
     </footer>
   </div>
-  <script src="javascripts/scale.fix.js"></script>
+  <script src="javascripts/scale.fix.js" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const toggle = document.querySelector('.tdnn');
