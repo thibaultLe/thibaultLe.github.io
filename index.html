@@ -390,6 +390,28 @@
       aspect-ratio: 1;
       object-fit: cover;
       border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Photography lightbox popup */
+    .photo-popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .photo-popup-overlay.is-visible {
+      display: flex;
+    }
+    .photo-popup-overlay img {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
     }
 
     /* Progress bar styles */
@@ -679,6 +701,32 @@
         <img src="/assets/photography/IMG_9063.jpg" alt="Photography">
         <img src="/assets/photography/IMG_9908.jpg" alt="Photography">
       </div>
+      <div class="photo-popup-overlay" id="photoPopupOverlay" aria-hidden="true">
+        <img id="photoPopupImg" src="" alt="Enlarged photography">
+      </div>
+      <script>
+        (function() {
+          var overlay = document.getElementById('photoPopupOverlay');
+          var popupImg = document.getElementById('photoPopupImg');
+          function closePhotoPopup() {
+            overlay.classList.remove('is-visible');
+            overlay.setAttribute('aria-hidden', 'true');
+          }
+          document.querySelectorAll('.photography-grid img').forEach(function(img) {
+            img.addEventListener('click', function() {
+              popupImg.src = this.src;
+              overlay.classList.add('is-visible');
+              overlay.removeAttribute('aria-hidden');
+            });
+          });
+          overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closePhotoPopup();
+          });
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('is-visible')) closePhotoPopup();
+          });
+        })();
+      </script>
 
     </section>
 
