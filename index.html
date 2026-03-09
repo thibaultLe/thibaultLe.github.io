@@ -237,14 +237,18 @@
 
     /* Project tiles */
     .project-tiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 1rem;
       margin: 0 0 20px;
       list-style: none;
       padding: 0;
     }
     .project-tile {
+      flex: 0 0 calc((100% - 2 * 1rem) / 3);
+      min-width: 200px;
+      max-width: 100%;
       background: var(--background-color);
       border: 1px solid rgba(0, 0, 0, 0.12);
       border-radius: 8px;
@@ -575,6 +579,17 @@
           <div class="project-tile-body">
             <div class="project-tile-content">
               At ESA's Advanced Concepts Team, I implemented a novel approach to reconstruct Dark Matter distributions from stellar orbits in the Galactic Centre, eliminating the need to make assumptions on the physical composition of the Dark Matter distribution <a href="https://doi.org/10.1051/0004-6361/202347738" target="_blank" rel="noopener">[doi.org/10.1051/0004-6361/202347738]</a>.
+            </div>
+          </div>
+        </li>
+        <li class="project-tile" data-project>
+          <span class="project-tile-thumb-wrap">
+            <img class="project-tile-thumb" src="/assets/causmaecker.png" alt="Instance space and algorithm performance" loading="lazy" width="200" height="150">
+            <span class="project-tile-title">Instance space of the Hamiltonian completion problem</span>
+          </span>
+          <div class="project-tile-body">
+            <div class="project-tile-content">
+              Benchmarking algorithm performance on graphs is challenging: standard instance sets are lacking, and existing generators often yield a narrow, insufficiently diverse spectrum of difficulty. We used evolutionary algorithms to generate a diverse set of instances, then analyzed which graph attributes best predict algorithm performance and filled gaps in the instance space to create graphs with previously unseen feature combinations. We applied this methodology to the Hamiltonian completion problem using the Concorde TSP Solver and a multi-start local search algorithm <a href="https://doi.org/10.1016/j.cor.2022.106019" target="_blank" rel="noopener">[doi.org/10.1016/j.cor.2022.106019]</a>.
             </div>
           </div>
         </li>
