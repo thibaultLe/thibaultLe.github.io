@@ -676,17 +676,15 @@
             let progressPercentage = (elapsed / totalDuration) * 100;
             progressPercentage = Math.max(0, Math.min(100, progressPercentage));
 
-            // Only update DOM if value has changed significantly (>0.000001)
+            // 8 decimal places so the last digits tick super fast as time passes
             const formattedProgress = progressPercentage.toFixed(8);
-            if (progressText.textContent !== `${formattedProgress}%`) {
-                progressBar.style.width = `${progressPercentage}%`;
-                progressBar.setAttribute('aria-valuenow', progressPercentage);
-                progressText.textContent = `${formattedProgress}%`;
-            }
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
+            progressText.textContent = `${formattedProgress}%`;
         }
 
         updateProgress();
-        setInterval(updateProgress, 60000);
+        setInterval(updateProgress, 100);
     </script>
 
       <!-- FuckUpMySite link -->
