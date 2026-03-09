@@ -167,6 +167,14 @@
       text-align: justify;
     }
 
+    /* Profile photo - keep aspect ratio */
+    header .profile-photo {
+      width: 100%;
+      max-width: 270px;
+      height: auto;
+      display: block;
+    }
+
     /* Adjust link size in header */
     header a {
       font-size: 16px;  /* Increased from 14px */
@@ -464,7 +472,7 @@
     <header>
       <h1>Thibault Lechien</h1>
       <p>PhD Student <br> Max Planck Institute for Astrophysics</p>
-      <img src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo" width="300" height="300" fetchpriority="high">
+      <img class="profile-photo" src="/assets/IMG_1624.jpg" alt="Thibault Lechien's Photo" fetchpriority="high">
       <p></p>
 
 
