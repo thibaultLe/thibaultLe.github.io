@@ -350,13 +350,16 @@
       display: block;
       width: 100%;
       overflow: hidden;
+      aspect-ratio: 3/4;
     }
     .hobby-tile-wrap img {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
       object-fit: cover;
+      object-position: center;
       border-radius: 8px;
+      cursor: pointer;
     }
     .hobby-tile-title {
       position: absolute;
@@ -412,6 +415,11 @@
       max-height: 90vh;
       object-fit: contain;
       border-radius: 8px;
+    }
+
+    /* Whitespace before non-work sections */
+    .non-work-section {
+      margin-top: 2.5rem;
     }
 
     /* Progress bar styles */
@@ -667,7 +675,7 @@
         </a>
       </p> -->
 
-      <h2>Hobbies</h2>
+      <h2 class="non-work-section">Free time</h2>
       <div class="hobbies-row">
         <div class="hobby-tile">
           <span class="hobby-tile-wrap">
@@ -693,16 +701,16 @@
       <div class="photography-grid">
         <img src="/assets/photography/IMG_2582.jpg" alt="Photography">
         <img src="/assets/photography/IMG_7837.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_7931.jpg" alt="Photography">
+        <img src="/assets/photography/IMG_8824.jpg" alt="Photography">
         <img src="/assets/photography/IMG_8723.jpg" alt="Photography">
         <img src="/assets/photography/IMG_8796.jpg" alt="Photography">
         <img src="/assets/photography/IMG_8821.jpg" alt="Photography">
-        <img src="/assets/photography/IMG_8824.jpg" alt="Photography">
+        <img src="/assets/photography/IMG_7931.jpg" alt="Photography">
         <img src="/assets/photography/IMG_9063.jpg" alt="Photography">
         <img src="/assets/photography/IMG_9908.jpg" alt="Photography">
       </div>
       <div class="photo-popup-overlay" id="photoPopupOverlay" aria-hidden="true">
-        <img id="photoPopupImg" src="" alt="Enlarged photography">
+        <img id="photoPopupImg" src="" alt="Enlarged image">
       </div>
       <script>
         (function() {
@@ -712,12 +720,16 @@
             overlay.classList.remove('is-visible');
             overlay.setAttribute('aria-hidden', 'true');
           }
+          function openPopup(src) {
+            popupImg.src = src;
+            overlay.classList.add('is-visible');
+            overlay.removeAttribute('aria-hidden');
+          }
           document.querySelectorAll('.photography-grid img').forEach(function(img) {
-            img.addEventListener('click', function() {
-              popupImg.src = this.src;
-              overlay.classList.add('is-visible');
-              overlay.removeAttribute('aria-hidden');
-            });
+            img.addEventListener('click', function() { openPopup(this.src); });
+          });
+          document.querySelectorAll('.hobby-tile-wrap img').forEach(function(img) {
+            img.addEventListener('click', function() { openPopup(this.src); });
           });
           overlay.addEventListener('click', function(e) {
             if (e.target === overlay) closePhotoPopup();
