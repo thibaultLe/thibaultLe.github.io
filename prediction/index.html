@@ -29,7 +29,9 @@
       line-height: 1.75rem;
       text-align: center;
     }
-    .candidate-card .card-img-top { width: 100%; aspect-ratio: 16/9; object-fit: contain; display: block; background: #f0f0f0; }
+    .candidate-card { padding: 0; }
+    .candidate-card .card-img-top { width: 100%; aspect-ratio: 3/4; object-fit: contain; display: block; background: transparent; vertical-align: top; }
+    .candidate-card .card-body { padding: 0.35rem 0.5rem; }
     .count-badge { font-size: 1rem; }
     .selection-bar {
       position: sticky;
@@ -46,7 +48,7 @@
 <body>
   <div class="wrapper py-4">
     <h1>FBR Talks – Predict the 8 selected speakers</h1>
-    <p class="text-muted">Select exactly 8 people. Your prediction will be stored so we can compare accuracy once the committee announces the results.</p>
+    <p class="text-muted">Select exactly 8 people. Your prediction will be stored so we can compare accuracy once the committee announces the results. ONE (1) submission per person. Predictions are accepted until 5 minutes before the announcement (13:55 CET on Tuesday March 10th).</p>
 
     <div class="selection-bar">
       <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -114,6 +116,8 @@
       const card = e.target.closest('.candidate-card');
       if (card) toggle(card.dataset.id);
     });
+
+    nameEl.addEventListener('input', updateUI);
 
     submitBtn.addEventListener('click', async () => {
       const name = nameEl.value.trim();
