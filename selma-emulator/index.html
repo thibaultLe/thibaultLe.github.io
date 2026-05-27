@@ -12,13 +12,26 @@
     :root {
       --slack-purple: #4a154b;
       --slack-purple-dark: #350d36;
-      --panel-bg: #f8f8f8;
-      --border: #e0e0e0;
-      --text: #1d1c1d;
-      --text-secondary: #616061;
-      --link: #1264a3;
-      --composer-bg: #fff;
-      --shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+      --page-bg: #121214;
+      --sidebar-bg: #191619;
+      --sidebar-hover: #2a272e;
+      --sidebar-text: #f8f8f8;
+      --sidebar-muted: #ab9ba9;
+      --main-bg: #1a1d21;
+      --header-bg: #1a1d21;
+      --panel-bg: #1a1d21;
+      --border: #383940;
+      --border-soft: #2c2d32;
+      --text: #e8e8e8;
+      --text-secondary: #a0a0a5;
+      --link: #1d9bd1;
+      --composer-bg: #1a1d21;
+      --bubble-other: #222529;
+      --bubble-user: #1264a3;
+      --bubble-user-border: #0b4c8c;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+      --shell-border: #2d2d33;
+      --accent-select: #1164a3;
     }
 
     * {
@@ -31,20 +44,18 @@
       font-size: 15px;
       line-height: 1.46668;
       color: var(--text);
-      background: #fff;
+      background: var(--page-bg);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
     /* Name gate */
     .gate {
-      flex: 1;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 2rem;
-      background: linear-gradient(160deg, var(--slack-purple-dark) 0%, var(--slack-purple) 100%);
+      background: radial-gradient(ellipse 80% 60% at 50% 20%, #2a1f35 0%, var(--page-bg) 55%);
     }
 
     .gate[hidden] {
@@ -54,10 +65,12 @@
     .gate-card {
       width: 100%;
       max-width: 400px;
-      background: #fff;
+      background: #2b2d31;
       border-radius: 8px;
       padding: 2rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border);
+      color: var(--text);
     }
 
     .gate-card h1 {
@@ -87,12 +100,14 @@
       border-radius: 4px;
       font-size: 1rem;
       font-family: inherit;
+      background: #1a1d21;
+      color: var(--text);
     }
 
     .gate-card input[type="text"]:focus {
-      outline: 2px solid #1264a3;
+      outline: 2px solid var(--accent-select);
       outline-offset: 1px;
-      border-color: #1264a3;
+      border-color: var(--accent-select);
     }
 
     .gate-card button {
@@ -113,32 +128,205 @@
       background: #611f69;
     }
 
-    /* Slack shell */
-    .app {
+    /* Centered Slack window (not full viewport) */
+    .app-viewport {
       display: none;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 3vw, 28px);
+      overflow-x: auto;
     }
 
-    .app.is-visible {
+    .app-viewport.is-visible {
       display: flex;
     }
 
-    .top-bar {
-      background: var(--slack-purple-dark);
-      color: #fff;
-      padding: 0.5rem 1rem;
+    .app {
+      display: flex;
+      flex-direction: row;
+      width: min(1120px, 100%);
+      min-width: 560px;
+      height: min(720px, calc(100vh - 48px));
+      max-height: calc(100vh - 48px);
+      background: var(--main-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--shell-border);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    /* Sidebar (Slack-style) */
+    .sidebar {
+      width: 260px;
+      min-width: 220px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-soft);
+      overflow: hidden;
+    }
+
+    .ws-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.5rem 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-soft);
+      gap: 0.35rem;
+    }
+
+    .ws-name {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: default;
+      padding: 0.25rem 0.35rem;
+      border-radius: 4px;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ws-name .chev {
+      font-size: 0.65rem;
+      opacity: 0.75;
+    }
+
+    .ws-tools {
+      display: flex;
+      gap: 0.15rem;
+    }
+
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--sidebar-muted);
+      cursor: default;
+      padding: 0;
+    }
+
+    .icon-btn:hover {
+      background: var(--sidebar-hover);
+      color: var(--sidebar-text);
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.35rem 0 1rem;
+    }
+
+    .nav-item {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 700;
-      flex-shrink: 0;
+      padding: 0.35rem 0.75rem 0.35rem 0.65rem;
+      margin: 0 0.35rem;
+      border-radius: 4px;
+      font-size: 0.94rem;
+      color: var(--sidebar-text);
+      cursor: default;
+      line-height: 1.35;
     }
 
-    .top-bar svg {
-      opacity: 0.9;
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+    }
+
+    .nav-item .nav-ico {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .sb-section {
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .sb-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.85rem 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--sidebar-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .sb-heading .sb-hash {
+      font-size: 0.95rem;
+      font-weight: 900;
+      opacity: 0.85;
+      width: 12px;
+      text-align: center;
+    }
+
+    .nav-item--dm {
+      align-items: flex-start;
+      padding-top: 0.45rem;
+      padding-bottom: 0.45rem;
+    }
+
+    .nav-item--active {
+      background: rgba(17, 100, 163, 0.35);
+      color: #fff;
+    }
+
+    .nav-item--active:hover {
+      background: rgba(17, 100, 163, 0.45);
+    }
+
+    .dm-avatar-stack {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: #5b2c5f;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      margin-top: 1px;
+    }
+
+    .channel-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .main-pane {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--main-bg);
     }
 
     .dm-header {
@@ -147,7 +335,7 @@
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      background: #fff;
+      background: var(--header-bg);
       flex-shrink: 0;
     }
 
@@ -156,7 +344,7 @@
       height: 36px;
       border-radius: 4px;
       object-fit: cover;
-      background: #ddd;
+      background: #3a3a42;
     }
 
     .dm-header .titles {
@@ -167,6 +355,7 @@
     .dm-header .name {
       font-weight: 700;
       font-size: 1rem;
+      color: var(--text);
     }
 
     .dm-header .status {
@@ -221,7 +410,17 @@
       border-radius: 4px;
       flex-shrink: 0;
       object-fit: cover;
-      background: #ddd;
+      background: #3a3a42;
+    }
+
+    .msg-row--salme .avatar-spacer {
+      width: 36px;
+      flex-shrink: 0;
+    }
+
+    .msg-row--salme.msg-row--continue {
+      margin-top: 0.2rem;
+      margin-bottom: 0.85rem;
     }
 
     .msg-row--user {
@@ -258,6 +457,7 @@
     .sender {
       font-weight: 900;
       font-size: 0.95rem;
+      color: var(--text);
     }
 
     .time {
@@ -267,18 +467,20 @@
     }
 
     .bubble {
-      background: #fff;
+      background: var(--bubble-other);
       padding: 0.35rem 0.65rem 0.5rem;
       border-radius: 4px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       white-space: pre-wrap;
       word-break: break-word;
+      color: var(--text);
     }
 
     .msg-row--user .bubble {
-      background: #e8f5fa;
-      border-color: #c5e6f2;
+      background: var(--bubble-user);
+      border-color: var(--bubble-user-border);
+      color: #fff;
     }
 
     .read-receipt {
@@ -307,7 +509,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.2rem;
-      background: #fff;
+      background: var(--bubble-other);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 0.1rem 0.45rem 0.1rem 0.35rem;
@@ -341,13 +543,13 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.5rem 0.6rem;
-      background: #fff;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+      background: #222529;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
     }
 
     .composer:focus-within {
-      border-color: #1264a3;
-      box-shadow: 0 0 0 1px #1264a3;
+      border-color: var(--accent-select);
+      box-shadow: 0 0 0 1px var(--accent-select);
     }
 
     .composer textarea {
@@ -360,6 +562,12 @@
       min-height: 22px;
       max-height: 160px;
       padding: 0.25rem 0;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .composer textarea::placeholder {
+      color: var(--text-secondary);
     }
 
     .composer textarea:focus {
@@ -387,6 +595,18 @@
       opacity: 0.45;
       cursor: not-allowed;
     }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
@@ -402,44 +622,87 @@
     </div>
   </div>
 
-  <div class="app" id="app" aria-hidden="true">
-    <header class="top-bar">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5.5 4.5h13v15h-13v-15z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M8 8h8M8 12h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      </svg>
-      Slack
-    </header>
-    <div class="dm-header">
-      <img src="../assets/selma.png" alt="" width="36" height="36" id="salme-header-avatar">
-      <div class="titles">
-        <div class="name">Salme me Dink (she/they)</div>
-        <div class="status" id="dm-subtitle">Direct message</div>
-      </div>
-    </div>
-    <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
-    <div class="composer-wrap">
-      <div class="composer">
-        <label for="composer-input" class="visually-hidden">Message</label>
-        <textarea id="composer-input" rows="1" placeholder="Message Salme me Dink" maxlength="4000"></textarea>
-        <button type="button" class="send" id="send-btn" disabled>Send</button>
+  <div class="app-viewport" id="app-viewport" aria-hidden="true">
+    <div class="app" role="application" aria-label="Slack-style demo chat">
+      <aside class="sidebar" aria-label="BinCosmos workspace">
+        <div class="ws-header">
+          <button type="button" class="ws-name">BinCosmos <span class="chev" aria-hidden="true">▼</span></button>
+          <div class="ws-tools">
+            <button type="button" class="icon-btn" aria-label="Settings" title="Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+            </button>
+            <button type="button" class="icon-btn" aria-label="New message" title="New message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="sidebar-scroll">
+          <div class="nav-item">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Threads
+          </div>
+          <div class="nav-item">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+            Huddles
+          </div>
+          <div class="nav-item">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Drafts &amp; sent
+          </div>
+          <div class="nav-item">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 8h4M7 12h10"/></svg>
+            Directories
+          </div>
+          <div class="nav-item">
+            <span class="nav-ico" aria-hidden="true">🧼</span>
+            Spring cleaning
+          </div>
+
+          <div class="sb-section">
+            <div class="sb-heading">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 17.8 5.7 21l2.3-7-6-4.6h7.6L12 2z"/></svg>
+              Starred
+            </div>
+            <div class="nav-item nav-item--dm nav-item--active">
+              <span class="dm-avatar-stack" aria-hidden="true">2</span>
+              <span class="channel-name">Selma de Mink (she/they), Stephen</span>
+            </div>
+          </div>
+
+          <div class="sb-section">
+            <div class="sb-heading">
+              <span class="sb-hash" aria-hidden="true">#</span>
+              Channels
+            </div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">#</span><span class="channel-name">__munich_lunch_etc</span></div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">🔒</span><span class="channel-name">__munich-massive-binaries</span></div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">🔒</span><span class="channel-name">_astroph</span></div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">#</span><span class="channel-name">_intro_lectures_and_study_group</span></div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">#</span><span class="channel-name">_meeting_and_conference_announce…</span></div>
+            <div class="nav-item"><span class="nav-ico" aria-hidden="true">#</span><span class="channel-name">_random</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-pane">
+        <div class="dm-header">
+          <img src="../assets/selma.png" alt="" width="36" height="36" id="salme-header-avatar">
+          <div class="titles">
+            <div class="name">Salme me Dink (she/they)</div>
+            <div class="status" id="dm-subtitle">Direct message</div>
+          </div>
+        </div>
+        <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+        <div class="composer-wrap">
+          <div class="composer">
+            <label for="composer-input" class="visually-hidden">Message</label>
+            <textarea id="composer-input" rows="1" placeholder="Message Salme me Dink" maxlength="4000"></textarea>
+            <button type="button" class="send" id="send-btn" disabled>Send</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <style>
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  </style>
 
   <script>
     (function () {
@@ -449,7 +712,7 @@
       var THUMBS_UP_SKIN_6 = "\uD83D\uDC4D\uD83C\uDFFF";
 
       var gate = document.getElementById("gate");
-      var app = document.getElementById("app");
+      var appViewport = document.getElementById("app-viewport");
       var nameForm = document.getElementById("name-form");
       var userNameInput = document.getElementById("user-name");
       var messagesEl = document.getElementById("messages");
@@ -494,20 +757,47 @@
         messagesEl.appendChild(div);
       }
 
-      function appendSalmeMessage(text) {
+      /** Simple typo: swap two adjacent letters so it still looks like a real slip. */
+      function misspellName(name) {
+        var s = String(name);
+        var n = s.length;
+        if (n <= 1) {
+          return n === 1 ? s + "e" : s;
+        }
+        if (n === 2) {
+          return s.charAt(1) + s.charAt(0);
+        }
+        var i = Math.min(Math.max(1, Math.floor(n / 2)), n - 2);
+        return s.slice(0, i) + s.charAt(i + 1) + s.charAt(i) + s.slice(i + 2);
+      }
+
+      function appendSalmeMessage(text, isContinuation) {
         var row = document.createElement("div");
-        row.className = "msg-row msg-row--salme";
+        row.className = "msg-row msg-row--salme" + (isContinuation ? " msg-row--continue" : "");
+        var leftCol = isContinuation
+          ? '<div class="avatar-spacer" aria-hidden="true"></div>'
+          : '<img class="avatar" src="' + SALME_AVATAR + '" alt="">';
+        var meta = isContinuation
+          ? ""
+          : '<div class="msg-meta-line">' +
+            '<span class="sender">' + escapeHtml(SALME_DISPLAY) + "</span>" +
+            '<span class="time">' + escapeHtml(formatTime(new Date())) + "</span>" +
+            "</div>";
         row.innerHTML =
-          '<img class="avatar" src="' + SALME_AVATAR + '" alt="">' +
+          leftCol +
           '<div class="msg-stack">' +
-          '<div class="msg-meta-line">' +
-          '<span class="sender">' + escapeHtml(SALME_DISPLAY) + "</span>" +
-          '<span class="time">' + escapeHtml(formatTime(new Date())) + "</span>" +
-          "</div>" +
+          meta +
           '<div class="bubble">' + escapeHtml(text).replace(/\n/g, "<br>") + "</div>" +
           "</div>";
         messagesEl.appendChild(row);
         messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function postOpeningSalmeMessages(correctName) {
+        var wrong = misspellName(correctName);
+        appendSalmeMessage("Dear " + wrong + ", I'll be away until 5th of July...");
+        appendSalmeMessage("but I have time today until 16:45 if you want...", true);
+        appendSalmeMessage("Salme", true);
       }
 
       function appendUserMessageWithReadAndReaction(text) {
@@ -532,12 +822,6 @@
         messagesEl.scrollTop = messagesEl.scrollHeight;
       }
 
-      function salmeOpeningMessage(name) {
-        return (
-          "Dear " + name + ", I'll be away until 5th of July... but I have time today until 16:45 if you want...\nSalme"
-        );
-      }
-
       nameForm.addEventListener("submit", function (e) {
         e.preventDefault();
         var raw = userNameInput.value.trim();
@@ -545,12 +829,12 @@
         userDisplayName = raw.slice(0, 80);
         gate.hidden = true;
         gate.setAttribute("aria-hidden", "true");
-        app.classList.add("is-visible");
-        app.setAttribute("aria-hidden", "false");
+        appViewport.classList.add("is-visible");
+        appViewport.setAttribute("aria-hidden", "false");
         dmSubtitle.textContent = "Direct message with " + userDisplayName;
 
         appendDayDivider();
-        appendSalmeMessage(salmeOpeningMessage(userDisplayName));
+        postOpeningSalmeMessages(userDisplayName);
         composer.focus();
       });
 
