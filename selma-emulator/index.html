@@ -844,16 +844,52 @@
       function postOpeningSalmeMessages(correctName) {
         var wrong = misspellName(correctName);
         var m1 = "Dear " + wrong + ", I'll be away until 5th of July...";
-        var m2 = "but I have time today until 16:45 if you want...";
+        var m2Before = "but I have time today until ";
+        var m2TimeLiteral = "16:45";
+        var m2After = " if you want...";
         var m3 = "Selma";
+
+        function joinM2() {
+          return m2Before + m2TimeLiteral + m2After;
+        }
+
+        function typoM2AroundTime() {
+          var canBefore = m2Before.length >= 2;
+          var canAfter = m2After.length >= 2;
+          if (!canBefore && !canAfter) {
+            return;
+          }
+          if (canBefore && canAfter) {
+            if (Math.random() < 0.5) {
+              m2Before = randomTypo(m2Before);
+            } else {
+              m2After = randomTypo(m2After);
+            }
+          } else if (canBefore) {
+            m2Before = randomTypo(m2Before);
+          } else {
+            m2After = randomTypo(m2After);
+          }
+        }
+
+        function applyTypoAtMessageIndex(idx) {
+          if (idx === 0) {
+            m1 = randomTypo(m1);
+          } else if (idx === 1) {
+            typoM2AroundTime();
+          } else {
+            m3 = randomTypo(m3);
+          }
+        }
+
         var pick = Math.floor(Math.random() * 3);
-        var msgs = [m1, m2, m3];
-        msgs[pick] = randomTypo(msgs[pick]);
+        applyTypoAtMessageIndex(pick);
         pick = Math.floor(Math.random() * 3);
-        msgs[pick] = randomTypo(msgs[pick]);
-        appendSalmeMessage(msgs[0]);
-        appendSalmeMessage(msgs[1], true);
-        appendSalmeMessage(msgs[2], true);
+        applyTypoAtMessageIndex(pick);
+
+        appendSalmeMessage(m1);
+        appendSalmeMessage(joinM2(), true);
+        appendSalmeMessage(m3, true);
       }
 
       function appendPastUserMessage(text, atDate) {
