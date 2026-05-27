@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Direct message — Salme me Dink</title>
+  <title>Direct message — Selma de Mink</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
@@ -711,7 +711,7 @@
         <div class="dm-header">
           <img src="../assets/selma.png" alt="" width="36" height="36" id="salme-header-avatar">
           <div class="titles">
-            <div class="name">Salme me Dink (she/they)</div>
+            <div class="name">Selma de Mink (she/they)</div>
             <div class="status" id="dm-subtitle">Direct message</div>
           </div>
         </div>
@@ -719,7 +719,7 @@
         <div class="composer-wrap">
           <div class="composer">
             <label for="composer-input" class="visually-hidden">Message</label>
-            <textarea id="composer-input" rows="1" placeholder="Message Salme me Dink" maxlength="4000"></textarea>
+            <textarea id="composer-input" rows="1" placeholder="Message Selma de Mink" maxlength="4000"></textarea>
             <button type="button" class="send" id="send-btn" disabled>Send</button>
           </div>
         </div>
@@ -730,7 +730,7 @@
   <script>
     (function () {
       var SALME_AVATAR = "../assets/selma.png";
-      var SALME_DISPLAY = "Salme me Dink (she/they)";
+      var SALME_DISPLAY = "Selma de Mink (she/they)";
       /** Thumbs up + Fitzpatrick type-6 modifier (skin tone 6). */
       var THUMBS_UP_SKIN_6 = "\uD83D\uDC4D\uD83C\uDFFF";
 
@@ -746,6 +746,8 @@
       var userDisplayName = "";
       var salmeOpeningDelivered = false;
       var salmeLateReplySent = false;
+      /** Only the first user-sent message gets Salme's thumbs-up reaction. */
+      var salmeUserThumbsUpUsed = false;
 
       function pad2(n) {
         return n < 10 ? "0" + n : String(n);
@@ -832,7 +834,7 @@
         var wrong = misspellName(correctName);
         appendSalmeMessage("Dear " + wrong + ", I'll be away until 5th of July...");
         appendSalmeMessage("but I have time today until 16:45 if you want...", true);
-        appendSalmeMessage("Salme", true);
+        appendSalmeMessage("Selma", true);
       }
 
       function appendPastUserMessage(text, atDate) {
@@ -851,6 +853,11 @@
       }
 
       function appendUserMessageWithReadAndReaction(text) {
+        var scheduleThumbsUp = !salmeUserThumbsUpUsed;
+        if (scheduleThumbsUp) {
+          salmeUserThumbsUpUsed = true;
+        }
+
         var row = document.createElement("div");
         row.className = "msg-row msg-row--user";
         row.innerHTML =
@@ -861,21 +868,23 @@
           "</div>" +
           '<div class="bubble">' + escapeHtml(text).replace(/\n/g, "<br>") + "</div>" +
           '<div class="read-receipt">Read</div>' +
-          '<div class="reactions" aria-hidden="true"></div>' +
+          (scheduleThumbsUp ? '<div class="reactions" aria-hidden="true"></div>' : "") +
           "</div>";
         messagesEl.appendChild(row);
         messagesEl.scrollTop = messagesEl.scrollHeight;
 
-        var reactionsHost = row.querySelector(".reactions");
-        setTimeout(function () {
-          reactionsHost.innerHTML =
-            '<span class="reaction-pill" title="' + escapeHtml(SALME_DISPLAY) + '">' +
-            '<span class="emoji">' + THUMBS_UP_SKIN_6 + "</span>" +
-            '<span class="count">1</span>' +
-            "</span>";
-          reactionsHost.removeAttribute("aria-hidden");
-          messagesEl.scrollTop = messagesEl.scrollHeight;
-        }, 5000);
+        if (scheduleThumbsUp) {
+          var reactionsHost = row.querySelector(".reactions");
+          setTimeout(function () {
+            reactionsHost.innerHTML =
+              '<span class="reaction-pill" title="' + escapeHtml(SALME_DISPLAY) + '">' +
+              '<span class="emoji">' + THUMBS_UP_SKIN_6 + "</span>" +
+              '<span class="count">1</span>' +
+              "</span>";
+            reactionsHost.removeAttribute("aria-hidden");
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 5000);
+        }
 
         if (salmeOpeningDelivered && !salmeLateReplySent) {
           salmeLateReplySent = true;
