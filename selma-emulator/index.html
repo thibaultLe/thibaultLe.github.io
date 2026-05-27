@@ -808,6 +808,17 @@
         return s.slice(0, i) + s.charAt(i + 1) + s.charAt(i) + s.slice(i + 2);
       }
 
+      /** One random adjacent-letter swap (Slip-of-finger style). */
+      function randomTypo(str) {
+        var s = String(str);
+        var n = s.length;
+        if (n < 2) {
+          return s;
+        }
+        var i = Math.floor(Math.random() * (n - 1));
+        return s.slice(0, i) + s.charAt(i + 1) + s.charAt(i) + s.slice(i + 2);
+      }
+
       function appendSalmeMessage(text, isContinuation) {
         var row = document.createElement("div");
         row.className = "msg-row msg-row--salme" + (isContinuation ? " msg-row--continue" : "");
@@ -832,9 +843,17 @@
 
       function postOpeningSalmeMessages(correctName) {
         var wrong = misspellName(correctName);
-        appendSalmeMessage("Dear " + wrong + ", I'll be away until 5th of July...");
-        appendSalmeMessage("but I have time today until 16:45 if you want...", true);
-        appendSalmeMessage("Selma", true);
+        var m1 = "Dear " + wrong + ", I'll be away until 5th of July...";
+        var m2 = "but I have time today until 16:45 if you want...";
+        var m3 = "Selma";
+        var pick = Math.floor(Math.random() * 3);
+        var msgs = [m1, m2, m3];
+        msgs[pick] = randomTypo(msgs[pick]);
+        pick = Math.floor(Math.random() * 3);
+        msgs[pick] = randomTypo(msgs[pick]);
+        appendSalmeMessage(msgs[0]);
+        appendSalmeMessage(msgs[1], true);
+        appendSalmeMessage(msgs[2], true);
       }
 
       function appendPastUserMessage(text, atDate) {
