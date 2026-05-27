@@ -278,6 +278,13 @@
       letter-spacing: 0.03em;
     }
 
+    .sb-heading svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
     .sb-heading .sb-hash {
       font-size: 0.95rem;
       font-weight: 900;
@@ -508,25 +515,40 @@
     .reaction-pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
-      background: var(--bubble-other);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.1rem 0.45rem 0.1rem 0.35rem;
+      gap: 0.35rem;
+      background: linear-gradient(180deg, #3a3e47 0%, #2c3036 100%);
+      border: 1px solid #6f737c;
+      border-radius: 14px;
+      padding: 0.2rem 0.45rem 0.2rem 0.25rem;
       font-size: 0.85rem;
-      box-shadow: var(--shadow);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.45);
       cursor: default;
     }
 
     .reaction-pill .emoji {
       font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
       line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.75em;
+      min-height: 1.75em;
+      padding: 0.15rem 0.28rem;
+      background: #4d525c;
+      border-radius: 10px;
+      border: 1px solid #8b9099;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.35);
     }
 
     .reaction-pill .count {
       font-size: 0.75rem;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: #d0d1d3;
+      padding-right: 0.1rem;
     }
 
     .composer-wrap {
@@ -613,7 +635,7 @@
   <div class="gate" id="gate">
     <div class="gate-card">
       <h1>Open a direct message</h1>
-      <p>Enter the name you use at work so the thread looks right.</p>
+      <p>Enter your Slack name.</p>
       <form id="name-form" autocomplete="off">
         <label for="user-name">Your name</label>
         <input type="text" id="user-name" name="name" required maxlength="80" placeholder="e.g. Alex" autofocus>
@@ -735,11 +757,14 @@
         return h + ":" + pad2(m) + " " + ampm;
       }
 
-      function todayHeading() {
-        var d = new Date();
+      function dateHeading(d) {
         var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         return days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
+      }
+
+      function todayHeading() {
+        return dateHeading(new Date());
       }
 
       function escapeHtml(s) {
@@ -754,6 +779,13 @@
         var div = document.createElement("div");
         div.className = "day-divider";
         div.innerHTML = "<span>" + escapeHtml(todayHeading()) + "</span>";
+        messagesEl.appendChild(div);
+      }
+
+      function appendDayDividerForDate(d) {
+        var div = document.createElement("div");
+        div.className = "day-divider";
+        div.innerHTML = "<span>" + escapeHtml(dateHeading(d)) + "</span>";
         messagesEl.appendChild(div);
       }
 
@@ -800,6 +832,21 @@
         appendSalmeMessage("Salme", true);
       }
 
+      function appendPastUserMessage(text, atDate) {
+        var row = document.createElement("div");
+        row.className = "msg-row msg-row--user";
+        row.innerHTML =
+          '<div class="msg-stack">' +
+          '<div class="msg-meta-line">' +
+          '<span class="sender">' + escapeHtml(userDisplayName) + "</span>" +
+          '<span class="time">' + escapeHtml(formatTime(atDate)) + "</span>" +
+          "</div>" +
+          '<div class="bubble">' + escapeHtml(text).replace(/\n/g, "<br>") + "</div>" +
+          "</div>";
+        messagesEl.appendChild(row);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
       function appendUserMessageWithReadAndReaction(text) {
         var row = document.createElement("div");
         row.className = "msg-row msg-row--user";
@@ -833,6 +880,10 @@
         appViewport.setAttribute("aria-hidden", "false");
         dmSubtitle.textContent = "Direct message with " + userDisplayName;
 
+        /** Earlier thread: user's question (Feb 3) before Salme's reply block. */
+        var feb3 = new Date(2026, 1, 3, 11, 42);
+        appendDayDividerForDate(feb3);
+        appendPastUserMessage("Hi Selma, could you give comments on my paper?", feb3);
         appendDayDivider();
         postOpeningSalmeMessages(userDisplayName);
         composer.focus();
