@@ -744,6 +744,8 @@
       var dmSubtitle = document.getElementById("dm-subtitle");
 
       var userDisplayName = "";
+      var salmeOpeningDelivered = false;
+      var salmeLateReplySent = false;
 
       function pad2(n) {
         return n < 10 ? "0" + n : String(n);
@@ -859,15 +861,28 @@
           "</div>" +
           '<div class="bubble">' + escapeHtml(text).replace(/\n/g, "<br>") + "</div>" +
           '<div class="read-receipt">Read</div>' +
-          '<div class="reactions">' +
-          '<span class="reaction-pill" title="' + escapeHtml(SALME_DISPLAY) + '">' +
-          '<span class="emoji">' + THUMBS_UP_SKIN_6 + "</span>" +
-          '<span class="count">1</span>' +
-          "</span>" +
-          "</div>" +
+          '<div class="reactions" aria-hidden="true"></div>' +
           "</div>";
         messagesEl.appendChild(row);
         messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        var reactionsHost = row.querySelector(".reactions");
+        setTimeout(function () {
+          reactionsHost.innerHTML =
+            '<span class="reaction-pill" title="' + escapeHtml(SALME_DISPLAY) + '">' +
+            '<span class="emoji">' + THUMBS_UP_SKIN_6 + "</span>" +
+            '<span class="count">1</span>' +
+            "</span>";
+          reactionsHost.removeAttribute("aria-hidden");
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }, 5000);
+
+        if (salmeOpeningDelivered && !salmeLateReplySent) {
+          salmeLateReplySent = true;
+          setTimeout(function () {
+            appendSalmeMessage("Sorry... Running late");
+          }, 5000);
+        }
       }
 
       nameForm.addEventListener("submit", function (e) {
@@ -886,7 +901,10 @@
         appendDayDividerForDate(feb3);
         appendPastUserMessage("Hi Selma, could you give comments on my paper?", feb3);
         appendDayDivider();
-        postOpeningSalmeMessages(userDisplayName);
+        setTimeout(function () {
+          postOpeningSalmeMessages(userDisplayName);
+          salmeOpeningDelivered = true;
+        }, 5000);
         composer.focus();
       });
 
