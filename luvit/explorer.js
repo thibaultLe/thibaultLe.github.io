@@ -1,4 +1,4 @@
-const CHANNELS = ["ra", "dec", "color", "mag", "uv_color", "uv_mag"];
+const CHANNELS = ["ra", "dec", "color", "mag", "uv_color", "uv_mag", "nir_color", "nir_mag"];
 const TIER_LABELS = {
   dgst: "Probably just stars",
   gst: "Stars, less junk",
@@ -11,8 +11,11 @@ function panelList() {
   const short = (name) => name.replace("WFC3_", "").replace("WFPC2_", "");
   const b = short(blue);
   const r = short(red);
+  const nirBlue = short((state.filters && state.filters.nir_blue) || "F110W");
+  const nirRed = short((state.filters && state.filters.nir_red) || "F160W");
   return [
     { id: "radec", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false },
+    { id: "nir", x: "nir_color", y: "nir_mag", xlabel: `${nirBlue} − ${nirRed}`, ylabel: nirBlue, invertX: false, invertY: true },
     { id: "cmd", x: "color", y: "mag", xlabel: `${b} − ${r}`, ylabel: b, invertX: false, invertY: true },
     { id: "uv", x: "uv_color", y: "uv_mag", xlabel: `F275W − ${b}`, ylabel: "F275W", invertX: false, invertY: true },
   ];
@@ -76,7 +79,18 @@ function formatTick(value, step) {
   return value.toFixed(Math.min(6, decimals));
 }
 
+function countFinite(values) {
+  let n = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (Number.isFinite(values[i])) n += 1;
+  }
+  return n;
+}
+
 function limits(panel, stars) {
+  if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) {
+    return { xlim: [-0.75, 3], ylim: [13.5, 25.75] };
+  }
   return {
     xlim: dataRange(stars[panel.x]),
     ylim: dataRange(stars[panel.y]),
@@ -92,8 +106,9 @@ function decode(buffer) {
   const view = new DataView(buffer);
   const n = view.getUint32(4, true);
   let off = 8;
+  const nchan = CHANNELS.length;
   const scales = [];
-  for (let c = 0; c < 6; c++) {
+  for (let c = 0; c < nchan; c++) {
     const lo = view.getFloat32(off, true);
     off += 4;
     const hi = view.getFloat32(off, true);
@@ -103,7 +118,7 @@ function decode(buffer) {
   const stars = { n };
   for (const name of CHANNELS) stars[name] = new Float32Array(n);
   for (let i = 0; i < n; i++) {
-    for (let c = 0; c < 6; c++) {
+    for (let c = 0; c < nchan; c++) {
       const u = view.getUint16(off, true);
       off += 2;
       const [lo, hi] = scales[c];
@@ -284,6 +299,13 @@ function paintPanel(canvas) {
     canvas._key = viewKey;
     view.ctx.clearRect(0, 0, view.cssW, view.cssH);
     drawAxes(view);
+    if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) {
+      view.ctx.fillStyle = "#666";
+      view.ctx.font = "14px Segoe UI, Helvetica, Arial, sans-serif";
+      view.ctx.textAlign = "center";
+      view.ctx.textBaseline = "middle";
+      view.ctx.fillText("No near-infrared photometry", view.padL + view.plotW / 2, view.padT + view.plotH / 2);
+    }
     stamp(view, null, [70, 70, 70, 230], 1.25);
     snapshot(canvas);
   } else {
@@ -470,8 +492,8 @@ async function loadGalaxy() {
   const bytes = new Uint8Array(fetched);
   const raw = bytes[0] === 0x1f && bytes[1] === 0x8b ? await gunzip(fetched) : fetched;
   state.stars = decode(raw);
-  for (const id of ["radec", "cmd", "uv"]) {
-    const canvas = document.getElementById(id);
+  for (const panel of panelList()) {
+    const canvas = document.getElementById(panel.id);
     canvas._view = null;
     canvas._key = "";
     canvas._baseKey = "";
@@ -541,7 +563,7 @@ async function main() {
   });
   document.getElementById("reset-zoom").addEventListener("click", () => {
     state.zoom = {};
-    for (const id of ["radec", "cmd", "uv"]) document.getElementById(id)._key = "";
+    for (const panel of panelList()) document.getElementById(panel.id)._key = "";
     redraw();
   });
   for (const panel of panelList()) bindCanvas(document.getElementById(panel.id));
