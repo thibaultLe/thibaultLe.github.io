@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUVIT Data Explorer</title>
+  <link rel="icon" href="/assets/galaxy.png">
+  <link rel="stylesheet" href="explorer.css">
+</head>
+<body>
+  <main class="page">
+    <p class="home"><a href="/">thibaultle.github.io</a></p>
+    <h1>LUVIT Data Explorer</h1>
+    <p><span class="ink-green">Draw</span> on the diagrams. The <span class="ink-green">same stars</span> light up on every panel.</p>
+    <p>Scroll on a plot to zoom in. Right-click and drag to move it.</p>
+
+    <section class="card">
+      <h2>Galaxy selection</h2>
+      <div class="row">
+        <label>Galaxy
+          <select id="galaxy"></select>
+        </label>
+      </div>
+      <div class="row tier-row">
+        <span class="prompt">Show:</span>
+        <div id="tiers" class="row"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Star selection</h2>
+      <div class="row">
+        <span class="prompt">Shape:</span>
+        <button type="button" id="lasso" class="active">Lasso</button>
+        <button type="button" id="rect">Rectangle</button>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+
+    <div class="plots">
+      <div class="plot">
+        <p>RA / Dec</p>
+        <canvas id="radec" width="760" height="880"></canvas>
+      </div>
+      <div class="plot">
+        <p>Optical CMD</p>
+        <canvas id="cmd" width="760" height="880"></canvas>
+      </div>
+      <div class="plot">
+        <p>UV–opt CMD</p>
+        <canvas id="uv" width="760" height="880"></canvas>
+      </div>
+    </div>
+    <div class="row action-row">
+      <button type="button" id="clear" class="danger">Clear selection</button>
+      <button type="button" id="reset-zoom" class="danger">Reset zoom</button>
+    </div>
+  </main>
+  <script src="explorer.js"></script>
+</body>
+</html>
