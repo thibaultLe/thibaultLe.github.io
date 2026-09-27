@@ -27,7 +27,6 @@ const state = {
   tier: "dgst",
   stars: null,
   selected: null,
-  tool: "lasso",
   drawing: null,
   pan: null,
   zoom: {},
@@ -61,13 +60,58 @@ function niceStep(span) {
   return nice * base;
 }
 
-function tickValues(lo, hi) {
-  const step = niceStep(hi - lo);
+function valuesForStep(lo, hi, step) {
   const vals = [];
   let v = Math.ceil((lo + step * 1e-6) / step) * step;
   while (v < hi - step * 1e-6 && vals.length < 8) {
     vals.push(Math.abs(v) < step * 1e-8 ? 0 : v);
     v += step;
+  }
+  return vals;
+}
+
+function tickValues(lo, hi) {
+  const step = niceStep(hi - lo);
+  return { step, vals: valuesForStep(lo, hi, step) };
+}
+
+function nextNiceStep(step) {
+  const exp = Math.floor(Math.log10(step) + 1e-12);
+  const base = 10 ** exp;
+  const frac = step / base;
+  if (frac < 1.5) return 2 * base;
+  if (frac < 3) return 5 * base;
+  return 10 * base;
+}
+
+function previousNiceStep(step) {
+  const exp = Math.floor(Math.log10(step) + 1e-12);
+  const base = 10 ** exp;
+  const frac = step / base;
+  if (frac > 5.5) return 5 * base;
+  if (frac > 2.5) return 2 * base;
+  if (frac > 1.5) return base;
+  return 5 * 10 ** (exp - 1);
+}
+
+function spacedTicks(ctx, lo, hi, plotW) {
+  const span = hi - lo;
+  let step = niceStep(span * 5 / 3);
+  let vals = valuesForStep(lo, hi, step);
+  for (let i = 0; i < 8 && vals.length < 2; i++) {
+    step = previousNiceStep(step);
+    vals = valuesForStep(lo, hi, step);
+  }
+  for (let i = 0; i < 6 && vals.length > 2; i++) {
+    let widest = 0;
+    for (const value of vals) widest = Math.max(widest, ctx.measureText(formatTick(value, step)).width);
+    const pxGap = (step / span) * plotW;
+    if (pxGap >= widest + 20) break;
+    const next = nextNiceStep(step);
+    const nextVals = valuesForStep(lo, hi, next);
+    if (nextVals.length < 2) break;
+    step = next;
+    vals = nextVals;
   }
   return { step, vals };
 }
@@ -132,21 +176,30 @@ function finite(a, b, i) {
   return Number.isFinite(a[i]) && Number.isFinite(b[i]);
 }
 
-function layout(canvas, lim, panel) {
-  const cssW = 380;
-  const cssH = 440;
+function layout(canvas, lim, panel, cssW, cssH) {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const padL = 72;
-  const padR = 14;
+  ctx.font = "11px Segoe UI, Helvetica, Arial, sans-serif";
+  const yt = tickValues(lim.ylim[0], lim.ylim[1]);
+  let widest = 0;
+  for (const value of yt.vals) {
+    widest = Math.max(widest, ctx.measureText(formatTick(value, yt.step)).width);
+  }
+  const outer = 2;
+  const ylabelBand = 14;
+  const labelGap = 4;
+  const tickGap = 8;
+  const padL = Math.ceil(outer + ylabelBand + labelGap + widest + tickGap);
+  const labelX = outer + ylabelBand / 2;
+  const padR = 8;
   const padT = 12;
   const padB = 58;
   const plotW = cssW - padL - padR;
   const plotH = cssH - padT - padB;
-  return { ctx, cssW, cssH, padL, padR, padT, padB, plotW, plotH, lim, panel };
+  return { ctx, cssW, cssH, padL, padR, padT, padB, plotW, plotH, labelX, lim, panel };
 }
 
 function px(view, x, y) {
@@ -183,7 +236,9 @@ function drawAxes(view) {
   ctx.font = "11px Segoe UI, Helvetica, Arial, sans-serif";
   ctx.strokeRect(padL, padT, plotW, plotH);
 
-  const xt = tickValues(lim.xlim[0], lim.xlim[1]);
+  const xt = panel.id === "radec"
+    ? spacedTicks(ctx, lim.xlim[0], lim.xlim[1], plotW)
+    : tickValues(lim.xlim[0], lim.xlim[1]);
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
   for (const value of xt.vals) {
@@ -212,8 +267,10 @@ function drawAxes(view) {
   ctx.font = "12px Segoe UI, Helvetica, Arial, sans-serif";
   ctx.fillText(panel.xlabel, padL + plotW / 2, padT + plotH + 42);
   ctx.save();
-  ctx.translate(14, padT + plotH / 2);
+  ctx.translate(view.labelX, padT + plotH / 2);
   ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
   ctx.fillText(panel.ylabel, 0, 0);
   ctx.restore();
   ctx.restore();
@@ -290,9 +347,12 @@ function paintPanel(canvas) {
     canvas._baseKey = baseKey;
   }
   const lim = state.zoom[canvas.id] || canvas._base;
-  const viewKey = baseKey + JSON.stringify(lim);
+  const rect = canvas.getBoundingClientRect();
+  const cssW = rect.width || 380;
+  const cssH = rect.height || 440;
+  const viewKey = baseKey + JSON.stringify(lim) + "@" + Math.round(cssW) + "x" + Math.round(cssH);
   if (!canvas._view || canvas._key !== viewKey) {
-    const view = layout(canvas, lim, panel);
+    const view = layout(canvas, lim, panel, cssW, cssH);
     view.stars = stars;
     view.base = canvas._base;
     canvas._view = view;
@@ -357,11 +417,7 @@ function drawDraft(view) {
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
-  if (state.tool === "rect" && pts.length === 2) {
-    ctx.strokeRect(pts[0][0], pts[0][1], pts[1][0] - pts[0][0], pts[1][1] - pts[0][1]);
-  } else {
-    ctx.stroke();
-  }
+  ctx.stroke();
   ctx.restore();
 }
 
@@ -386,16 +442,7 @@ function applySelection(panel) {
   const pts = state.drawing.points.map((p) => dataXY(view, p[0], p[1]));
   const xs = stars[view.panel.x];
   const ys = stars[view.panel.y];
-  if (state.tool === "rect" && pts.length === 2) {
-    const x0 = Math.min(pts[0][0], pts[1][0]);
-    const x1 = Math.max(pts[0][0], pts[1][0]);
-    const y0 = Math.min(pts[0][1], pts[1][1]);
-    const y1 = Math.max(pts[0][1], pts[1][1]);
-    for (let i = 0; i < stars.n; i++) {
-      if (!finite(xs, ys, i)) continue;
-      sel[i] = xs[i] >= x0 && xs[i] <= x1 && ys[i] >= y0 && ys[i] <= y1 ? 1 : 0;
-    }
-  } else if (pts.length >= 3) {
+  if (pts.length >= 3) {
     for (let i = 0; i < stars.n; i++) {
       if (!finite(xs, ys, i)) continue;
       sel[i] = pointInPoly(xs[i], ys[i], pts) ? 1 : 0;
@@ -405,7 +452,11 @@ function applySelection(panel) {
   state.drawing = null;
   redraw();
   const n = sel.reduce((a, b) => a + b, 0);
-  document.getElementById("status").textContent = `${n.toLocaleString()} of ${stars.n.toLocaleString()} stars`;
+  const status = document.getElementById("status");
+  const count = document.createElement("span");
+  count.className = "ink-green";
+  count.textContent = n.toLocaleString();
+  status.replaceChildren(count, ` of ${stars.n.toLocaleString()} stars selected`);
 }
 
 function redraw() {
@@ -458,8 +509,7 @@ function bindCanvas(canvas) {
     }
     if (!state.drawing || state.drawing.panel !== canvas.id) return;
     const p = pointerPos(canvas, event);
-    if (state.tool === "rect") state.drawing.points = [state.drawing.points[0], p];
-    else state.drawing.points.push(p);
+    state.drawing.points.push(p);
     paintPanel(canvas);
   });
   canvas.addEventListener("pointerup", () => {
@@ -525,12 +575,6 @@ function fillTiers() {
   }
 }
 
-function setTool(name) {
-  state.tool = name;
-  document.getElementById("lasso").classList.toggle("active", name === "lasso");
-  document.getElementById("rect").classList.toggle("active", name === "rect");
-}
-
 async function main() {
   const res = await fetch("data/catalog.json");
   state.catalog = await res.json();
@@ -553,8 +597,6 @@ async function main() {
       document.getElementById("status").textContent = String(err);
     });
   });
-  document.getElementById("lasso").addEventListener("click", () => setTool("lasso"));
-  document.getElementById("rect").addEventListener("click", () => setTool("rect"));
   document.getElementById("clear").addEventListener("click", () => {
     state.selected = null;
     state.drawing = null;
@@ -567,6 +609,11 @@ async function main() {
     redraw();
   });
   for (const panel of panelList()) bindCanvas(document.getElementById(panel.id));
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(redraw, 150);
+  });
   fillTiers();
   await loadGalaxy();
 }
