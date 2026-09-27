@@ -21,9 +21,59 @@ body {
   text-align: center;
 }
 
+.what-wrap {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  z-index: 20;
+  text-align: left;
+}
+
+#what {
+  font-size: 0.78rem;
+  padding: 3px 8px;
+  color: #444;
+}
+
+.what-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 280px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.what-panel p { margin: 0 0 8px; }
+.what-panel p:last-child { margin: 0; }
+
 h1 { margin: 6px 0 4px; font-size: 1.7rem; }
 .lede { margin: 4px 0 12px; }
 .hint { margin: 10px 0 12px; }
+.credits {
+  max-width: 720px;
+  margin: 28px auto 0;
+  text-align: left;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.credits h2 {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.credits p { margin: 0 0 8px; }
+.credits a { color: inherit; }
+
 .home { margin: 20px 0 0; color: #444; font-size: 0.95rem; }
 .home a { color: inherit; }
 

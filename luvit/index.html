@@ -8,6 +8,15 @@
   <link rel="stylesheet" href="explorer.css">
 </head>
 <body>
+  <div class="what-wrap">
+    <button type="button" id="what" aria-expanded="false" aria-controls="whatPanel">What is this?</button>
+    <div class="what-panel" id="whatPanel" hidden>
+      <p>Each dot is a star in a small nearby galaxy, photographed by the Hubble Space Telescope.</p>
+      <p>The left diagram is a map of where the stars are on the sky. The other three compare how bright each star is with its color, in infrared, visible, and ultraviolet light. Hot young stars and cooler older ones land in different places.</p>
+      <p>Draw a loop on any diagram. Those same stars turn cyan on every panel, so you can see both where they are and what kind of star they are.</p>
+      <p>“Stars and junk” keeps everything the camera recorded. The other two buttons throw more of that junk away, until you are mostly looking at real stars.</p>
+    </div>
+  </div>
   <main class="page">
     <h1>LUVIT Data Explorer</h1>
     <p class="lede"><span class="ink-cyan">Draw</span> on the diagrams. The <span class="ink-cyan">same stars</span> light up on every panel.</p>
@@ -49,8 +58,31 @@
       <button type="button" id="clear" class="danger">Clear selection</button>
       <button type="button" id="reset-zoom" class="danger">Reset zoom</button>
     </div>
+    <section class="credits">
+      <h2>Credits</h2>
+      <p>These stars come from the <a href="https://www.stsci.edu/~mboyer/Science/LUVIT/" target="_blank" rel="noopener">Local Ultraviolet to Infrared Treasury</a> (LUVIT). The Hubble Space Telescope took ultraviolet images (GO-15275, PI Karoline M. Gilbert) and infrared images (GO-16162, PI Martha L. Boyer) of nearby dwarf galaxies.</p>
+      <p>Survey and catalogs: Gilbert et al. 2025, <a href="https://doi.org/10.3847/1538-4365/ad76af" target="_blank" rel="noopener">ApJS, 276, 8</a>. Star formation histories: Choi et al. 2025, <a href="https://doi.org/10.3847/1538-3881/adc384" target="_blank" rel="noopener">AJ, 169, 278</a>.</p>
+    </section>
     <p class="home"><a href="/">thibaultle.github.io</a></p>
   </main>
   <script src="explorer.js"></script>
+  <script>
+    (function () {
+      var button = document.getElementById("what");
+      var panel = document.getElementById("whatPanel");
+      function setOpen(open) {
+        panel.hidden = !open;
+        button.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      button.addEventListener("click", function (event) {
+        event.stopPropagation();
+        setOpen(panel.hidden);
+      });
+      document.addEventListener("click", function (event) {
+        if (panel.hidden || event.target.closest(".what-wrap")) return;
+        setOpen(false);
+      });
+    })();
+  </script>
 </body>
 </html>
