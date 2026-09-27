@@ -279,18 +279,24 @@ function drawAxes(view) {
 function blot(pix, w, h, ix, iy, rad, color) {
   const [r, g, b, a] = color;
   const rad2 = rad * rad;
-  for (let dy = -rad; dy <= rad; dy++) {
+  const reach = Math.ceil(rad);
+  for (let dy = -reach; dy <= reach; dy++) {
     const yy = iy + dy;
     if (yy < 0 || yy >= h) continue;
-    for (let dx = -rad; dx <= rad; dx++) {
-      if (dx * dx + dy * dy > rad2) continue;
+    for (let dx = -reach; dx <= reach; dx++) {
+      const dist2 = dx * dx + dy * dy;
+      if (dist2 > rad2) continue;
       const xx = ix + dx;
       if (xx < 0 || xx >= w) continue;
+      const cover = Math.min(1, rad - Math.sqrt(dist2) + 0.6);
+      const alpha = (a / 255) * cover;
       const o = (yy * w + xx) * 4;
-      pix[o] = r;
-      pix[o + 1] = g;
-      pix[o + 2] = b;
-      pix[o + 3] = a;
+      const dstA = pix[o + 3] / 255;
+      const outA = alpha + dstA * (1 - alpha);
+      pix[o] = (r * alpha + pix[o] * dstA * (1 - alpha)) / outA;
+      pix[o + 1] = (g * alpha + pix[o + 1] * dstA * (1 - alpha)) / outA;
+      pix[o + 2] = (b * alpha + pix[o + 2] * dstA * (1 - alpha)) / outA;
+      pix[o + 3] = outA * 255;
     }
   }
 }
@@ -298,7 +304,7 @@ function blot(pix, w, h, ix, iy, rad, color) {
 function stamp(view, mask, color, radiusCss) {
   const { ctx, stars, plotW, plotH, padL, padT } = view;
   const dpr = window.devicePixelRatio || 1;
-  const rad = Math.max(1, Math.round(radiusCss * dpr));
+  const rad = Math.max(2, radiusCss * dpr);
   const x0 = Math.round(padL * dpr);
   const y0 = Math.round(padT * dpr);
   const w = Math.round(plotW * dpr);
@@ -366,12 +372,12 @@ function paintPanel(canvas) {
       view.ctx.textBaseline = "middle";
       view.ctx.fillText("No near-infrared photometry", view.padL + view.plotW / 2, view.padT + view.plotH / 2);
     }
-    stamp(view, null, [70, 70, 70, 230], 1.25);
+    stamp(view, null, [70, 70, 70, 140], 2.2);
     snapshot(canvas);
   } else {
     restoreBg(canvas);
   }
-  if (state.selected) stamp(canvas._view, state.selected, [20, 140, 40, 245], 1.8);
+  if (state.selected) stamp(canvas._view, state.selected, [0, 196, 214, 220], 2.6);
   if (state.drawing && state.drawing.panel === panel.id) drawDraft(canvas._view);
 }
 
@@ -454,7 +460,7 @@ function applySelection(panel) {
   const n = sel.reduce((a, b) => a + b, 0);
   const status = document.getElementById("status");
   const count = document.createElement("span");
-  count.className = "ink-green";
+  count.className = "ink-cyan";
   count.textContent = n.toLocaleString();
   status.replaceChildren(count, ` of ${stars.n.toLocaleString()} stars selected`);
 }

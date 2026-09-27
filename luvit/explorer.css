@@ -77,6 +77,11 @@ h1 { margin: 6px 0 4px; font-size: 1.7rem; }
   font-weight: 700;
 }
 
+.ink-cyan {
+  color: rgb(0, 176, 194);
+  font-weight: 700;
+}
+
 select, button {
   font: inherit;
   border-radius: 8px;
