@@ -219,6 +219,14 @@ function dataXY(view, sx, sy) {
   ];
 }
 
+function alignPlotTitle(canvas, view) {
+  const title = canvas.previousElementSibling;
+  if (!title) return;
+  title.style.marginLeft = `${view.padL}px`;
+  title.style.marginRight = `${view.padR}px`;
+  title.style.textAlign = "center";
+}
+
 function insidePlot(view, sx, sy) {
   return sx >= view.padL && sx <= view.padL + view.plotW && sy >= view.padT && sy <= view.padT + view.plotH;
 }
@@ -232,7 +240,7 @@ function drawAxes(view) {
   ctx.font = "11px Segoe UI, Helvetica, Arial, sans-serif";
   ctx.strokeRect(padL, padT, plotW, plotH);
 
-  const xt = panel.id === "radec"
+  const xt = panel.x === "ra"
     ? spacedTicks(ctx, lim.xlim[0], lim.xlim[1], plotW)
     : tickValues(lim.xlim[0], lim.xlim[1]);
   ctx.textAlign = "center";
@@ -407,7 +415,11 @@ function paintPanel(canvas) {
   } else {
     restoreBg(canvas);
   }
-  if (state.selected && !panel.photo) stamp(canvas._view, state.selected, [0, 196, 214, 220], 2.6);
+  alignPlotTitle(canvas, canvas._view);
+  if (state.selected) {
+    const alpha = panel.photo ? 110 : 220;
+    stamp(canvas._view, state.selected, [0, 196, 214, alpha], 2.6);
+  }
   if (state.drawing && state.drawing.panel === panel.id) drawDraft(canvas._view);
 }
 
@@ -596,7 +608,7 @@ function markGalaxyMenu() {
     item.setAttribute("aria-selected", chosen ? "true" : "false");
     if (chosen) {
       button.textContent = item.textContent;
-      button.setAttribute("aria-label", `Galaxy, ${item.textContent}`);
+      button.setAttribute("aria-label", `Select a Galaxy: ${item.textContent}`);
     }
   }
 }

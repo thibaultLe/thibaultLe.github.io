@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LUVIT Data Explorer</title>
   <link rel="icon" href="/assets/galaxy.png">
-  <link rel="stylesheet" href="explorer.css">
+  <link rel="stylesheet" href="explorer.css?v=21">
 </head>
 <body>
   <div class="what-wrap">
@@ -17,7 +17,7 @@
     </div>
   </div>
   <div class="galaxy-wrap">
-    <span class="galaxy-label">Galaxy</span>
+    <span class="galaxy-label">Select a Galaxy:</span>
     <span class="galaxy-picker">
       <button type="button" id="galaxyButton" aria-haspopup="listbox" aria-expanded="false" aria-controls="galaxyList"></button>
       <ul id="galaxyList" role="listbox" hidden></ul>
@@ -65,7 +65,7 @@
     </section>
     <p class="home"><a href="/">thibaultle.github.io</a></p>
   </main>
-  <script src="explorer.js?v=19"></script>
+  <script src="explorer.js?v=22"></script>
   <script>
     (function () {
       var button = document.getElementById("what");
