@@ -17,8 +17,64 @@ body {
 .page {
   max-width: 100%;
   margin: 0 auto;
-  padding: 14px 12px 28px;
+  padding: 8px 12px 16px;
   text-align: center;
+}
+
+.galaxy-wrap {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.galaxy-label {
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.galaxy-picker {
+  position: relative;
+  display: inline-block;
+}
+
+#galaxyButton {
+  font-size: 0.85rem;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+#galaxyList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 40;
+  min-width: 100%;
+  max-height: 280px;
+  margin: 0;
+  padding: 4px 0;
+  overflow: auto;
+  list-style: none;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+#galaxyList li {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#galaxyList li[aria-selected="true"] {
+  font-weight: 700;
 }
 
 .what-wrap {
@@ -60,9 +116,9 @@ body {
 .what-panel p { margin: 0 0 8px; }
 .what-panel p:last-child { margin: 0; }
 
-h1 { margin: 6px 0 4px; font-size: 1.7rem; }
-.lede { margin: 4px 0 12px; }
-.hint { margin: 10px 0 12px; }
+h1 { margin: 0; font-size: 1.35rem; }
+.lede { margin: 2px 0 6px; }
+.hint { margin: 6px 0 8px; }
 .credits {
   max-width: 720px;
   margin: 28px auto 0;
@@ -110,21 +166,8 @@ h1 { margin: 6px 0 4px; font-size: 1.7rem; }
   gap: 12px;
 }
 
-.tier-row {
-  margin-top: 8px;
-}
-
-.tier-row .prompt,
-#tiers {
-  font-size: 0.78rem;
-}
-
-#tiers button {
-  padding: 3px 8px;
-}
-
 .action-row {
-  margin-top: 16px;
+  margin-top: 8px;
   justify-content: flex-end;
 }
 
@@ -167,11 +210,12 @@ button.danger {
   width: 100%;
 }
 
-.cmd-row { margin-top: 12px; }
+.cmd-row { margin-top: 4px; }
 
 .plot {
   position: relative;
-  flex: 0 0 calc((100% - 4px) / 3);
+  flex: 0 1 auto;
+  width: min(calc((100% - 16px) / 3), calc((100vh - 175px) * 380 / 880));
   min-width: 0;
 }
 
@@ -186,6 +230,6 @@ button.danger {
   touch-action: none;
 }
 
-.plot p { margin: 0 0 4px; font-weight: 650; }
+.plot p { margin: 0 0 2px; font-size: 0.9rem; font-weight: 650; }
 
 .status { margin: 4px 0 0; min-height: 1.2em; font-size: 0.9rem; }

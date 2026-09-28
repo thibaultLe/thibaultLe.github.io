@@ -14,25 +14,18 @@
       <p>Each dot is a star in a small nearby galaxy, photographed by the Hubble Space Telescope.</p>
       <p>The top row is a photograph of the galaxy and a map of where the stars are on the sky. The bottom row compares how bright each star is with its color, in infrared, visible, and ultraviolet light. Hot young stars and cooler older ones land in different places.</p>
       <p>Draw a loop on any diagram. Those same stars turn cyan on every panel, so you can see both where they are and what kind of star they are.</p>
-      <p>“Stars and junk” keeps everything the camera recorded. The other two buttons throw more of that junk away, until you are mostly looking at real stars.</p>
     </div>
+  </div>
+  <div class="galaxy-wrap">
+    <span class="galaxy-label">Galaxy</span>
+    <span class="galaxy-picker">
+      <button type="button" id="galaxyButton" aria-haspopup="listbox" aria-expanded="false" aria-controls="galaxyList"></button>
+      <ul id="galaxyList" role="listbox" hidden></ul>
+    </span>
   </div>
   <main class="page">
     <h1>LUVIT Data Explorer</h1>
     <p class="lede"><span class="ink-cyan">Draw</span> on the diagrams. The <span class="ink-cyan">same stars</span> light up on every panel.</p>
-
-    <section class="card">
-      <h2>Galaxy selection</h2>
-      <div class="row">
-        <label>Galaxy
-          <select id="galaxy"></select>
-        </label>
-      </div>
-      <div class="row tier-row">
-        <span class="prompt">Show:</span>
-        <div id="tiers" class="row"></div>
-      </div>
-    </section>
 
     <div class="plots">
       <div class="plot">

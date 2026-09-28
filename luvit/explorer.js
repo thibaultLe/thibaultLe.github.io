@@ -1,10 +1,4 @@
 const CHANNELS = ["ra", "dec", "color", "mag", "uv_color", "uv_mag", "nir_color", "nir_mag"];
-const TIER_LABELS = {
-  dgst: "Probably just stars",
-  gst: "Stars, less junk",
-  st: "Stars and junk",
-};
-const TIER_ORDER = ["st", "gst", "dgst"];
 function panelList() {
   const blue = (state.filters && state.filters.blue) || "F475W";
   const red = (state.filters && state.filters.red) || "F814W";
@@ -594,56 +588,69 @@ async function loadGalaxy() {
   redraw();
 }
 
-function fillTiers() {
-  const host = document.getElementById("tiers");
-  const galaxy = state.catalog.galaxies.find((g) => g.id === state.galaxy);
-  const tiers = galaxy.tiers;
-  state.filters = tiers.find((t) => t.id === state.tier) || tiers[0];
-  host.replaceChildren();
-  const ordered = tiers.slice().sort((a, b) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id));
-  for (const tier of ordered) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = TIER_LABELS[tier.id] || tier.id;
-    if (tier.id === state.tier) btn.className = "active";
-    btn.addEventListener("click", () => {
-      state.tier = tier.id;
-      fillTiers();
-      loadGalaxy().catch((err) => {
-        document.getElementById("status").textContent = String(err);
-      });
-    });
-    host.appendChild(btn);
+function markGalaxyMenu() {
+  const button = document.getElementById("galaxyButton");
+  const list = document.getElementById("galaxyList");
+  for (const item of list.children) {
+    const chosen = item.dataset.id === state.galaxy;
+    item.setAttribute("aria-selected", chosen ? "true" : "false");
+    if (chosen) {
+      button.textContent = item.textContent;
+      button.setAttribute("aria-label", `Galaxy, ${item.textContent}`);
+    }
   }
+}
+
+function closeGalaxyMenu() {
+  document.getElementById("galaxyList").hidden = true;
+  document.getElementById("galaxyButton").setAttribute("aria-expanded", "false");
+}
+
+function useCleanStars() {
+  const galaxy = state.catalog.galaxies.find((g) => g.id === state.galaxy);
+  const tier = galaxy.tiers.find((t) => t.id === "dgst") || galaxy.tiers[0];
+  state.tier = tier.id;
+  state.filters = tier;
 }
 
 async function main() {
   const res = await fetch("data/catalog.json");
   state.catalog = await res.json();
-  const select = document.getElementById("galaxy");
+  const list = document.getElementById("galaxyList");
+  const button = document.getElementById("galaxyButton");
   for (const galaxy of state.catalog.galaxies) {
-    const opt = document.createElement("option");
-    opt.value = galaxy.id;
-    opt.textContent = galaxy.label;
-    select.appendChild(opt);
+    const item = document.createElement("li");
+    item.setAttribute("role", "option");
+    item.dataset.id = galaxy.id;
+    item.textContent = galaxy.label;
+    item.addEventListener("click", () => {
+      state.galaxy = galaxy.id;
+      markGalaxyMenu();
+      closeGalaxyMenu();
+      useCleanStars();
+      loadGalaxy().catch((err) => {
+        document.getElementById("status").textContent = String(err);
+      });
+    });
+    list.appendChild(item);
   }
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const open = list.hidden;
+    list.hidden = !open;
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: "nearest" });
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".galaxy-picker")) closeGalaxyMenu();
+  });
   try {
     state.sky = await (await fetch("sky/index.json")).json();
   } catch (err) {
     state.sky = null;
   }
   state.galaxy = state.catalog.default;
-  state.tier = state.catalog.defaultTier;
-  select.value = state.galaxy;
-  select.addEventListener("change", () => {
-    state.galaxy = select.value;
-    const tiers = state.catalog.galaxies.find((g) => g.id === state.galaxy).tiers.map((t) => t.id);
-    if (!tiers.includes(state.tier)) state.tier = tiers.includes("dgst") ? "dgst" : tiers[0];
-    fillTiers();
-    loadGalaxy().catch((err) => {
-      document.getElementById("status").textContent = String(err);
-    });
-  });
+  markGalaxyMenu();
   document.getElementById("clear").addEventListener("click", () => {
     state.selected = null;
     state.drawing = null;
@@ -661,7 +668,7 @@ async function main() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(redraw, 150);
   });
-  fillTiers();
+  useCleanStars();
   await loadGalaxy();
 }
 
