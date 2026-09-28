@@ -5,6 +5,9 @@
   --line: #d5d7dc;
   --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 175px) * 380 / 880));
   --plots-w: calc(3 * var(--plot-w) + 4px);
+  --edge: 16px;
+  --in-left: max(var(--edge), calc((100vw - var(--plots-w)) / 2));
+  --in-right: min(calc(100vw - var(--edge)), calc((100vw + var(--plots-w)) / 2));
 }
 
 * { box-sizing: border-box; }
@@ -26,7 +29,7 @@ body {
 .galaxy-wrap {
   position: fixed;
   top: 18px;
-  left: max(16px, calc((100vw - var(--plots-w)) / 2));
+  left: calc((var(--edge) + var(--in-left)) / 2);
   z-index: 30;
   display: flex;
   align-items: center;
@@ -82,7 +85,7 @@ body {
 .what-wrap {
   position: fixed;
   top: 16px;
-  left: min(calc(100vw - 16px), calc((100vw + var(--plots-w)) / 2));
+  left: calc((100vw - var(--edge) + var(--in-right)) / 2);
   width: max-content;
   transform: translateX(-100%);
   z-index: 30;
