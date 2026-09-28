@@ -12,7 +12,7 @@
     <button type="button" id="what" aria-expanded="false" aria-controls="whatPanel">What is this?</button>
     <div class="what-panel" id="whatPanel" hidden>
       <p>Each dot is a star in a small nearby galaxy, photographed by the Hubble Space Telescope.</p>
-      <p>The left diagram is a map of where the stars are on the sky. The other three compare how bright each star is with its color, in infrared, visible, and ultraviolet light. Hot young stars and cooler older ones land in different places.</p>
+      <p>The top row is a photograph of the galaxy and a map of where the stars are on the sky. The bottom row compares how bright each star is with its color, in infrared, visible, and ultraviolet light. Hot young stars and cooler older ones land in different places.</p>
       <p>Draw a loop on any diagram. Those same stars turn cyan on every panel, so you can see both where they are and what kind of star they are.</p>
       <p>“Stars and junk” keeps everything the camera recorded. The other two buttons throw more of that junk away, until you are mostly looking at real stars.</p>
     </div>
@@ -36,9 +36,15 @@
 
     <div class="plots">
       <div class="plot">
-        <p>RA / Dec</p>
+        <p>Sky photograph</p>
+        <canvas id="photo" width="760" height="880"></canvas>
+      </div>
+      <div class="plot">
+        <p>Sky position</p>
         <canvas id="radec" width="760" height="880"></canvas>
       </div>
+    </div>
+    <div class="plots cmd-row">
       <div class="plot">
         <p>Near-infrared CMD</p>
         <canvas id="nir" width="760" height="880"></canvas>
@@ -60,8 +66,9 @@
     </div>
     <section class="credits">
       <h2>Credits</h2>
-      <p>These stars come from the <a href="https://www.stsci.edu/~mboyer/Science/LUVIT/" target="_blank" rel="noopener">Local Ultraviolet to Infrared Treasury</a> (LUVIT).<br>The Hubble Space Telescope took ultraviolet images (GO-15275, PI Karoline M. Gilbert) and infrared images (GO-16162, PI Martha L. Boyer) of nearby dwarf galaxies.</p>
+      <p>These stars come from the <a href="https://www.stsci.edu/~mboyer/Science/LUVIT/" target="_blank" rel="noopener">Local Ultraviolet to Infrared Treasury</a> (LUVIT).<br>The Hubble Space Telescope took ultraviolet images (GO-15275, PI Karoline M. Gilbert) <br> and infrared images (GO-16162, PI Martha L. Boyer) of nearby dwarf galaxies.</p>
       <p>Survey and catalogs: Gilbert et al. 2025, <a href="https://doi.org/10.3847/1538-4365/ad76af" target="_blank" rel="noopener">ApJS, 276, 8</a>. Star formation histories: Choi et al. 2025, <a href="https://doi.org/10.3847/1538-3881/adc384" target="_blank" rel="noopener">AJ, 169, 278</a>.</p>
+      <p>The sky photograph is a Hubble Space Telescope image from the <a href="https://hla.stsci.edu/" target="_blank" rel="noopener">Hubble Legacy Archive</a>.</p>
     </section>
     <p class="home"><a href="/">thibaultle.github.io</a></p>
   </main>

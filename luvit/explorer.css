@@ -23,12 +23,10 @@ body {
 
 .what-wrap {
   position: fixed;
-  top: 10px;
-  left: 0;
-  width: 100vw;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 12px;
+  top: 16px;
+  left: calc(100vw - 16px);
+  width: max-content;
+  transform: translateX(-100%);
   z-index: 30;
   pointer-events: none;
   text-align: left;
@@ -47,7 +45,8 @@ body {
 .what-panel {
   position: absolute;
   top: calc(100% + 6px);
-  right: 12px;
+  right: 0;
+  left: auto;
   width: 280px;
   padding: 10px 12px;
   background: #fff;
@@ -168,9 +167,11 @@ button.danger {
   width: 100%;
 }
 
+.cmd-row { margin-top: 12px; }
+
 .plot {
   position: relative;
-  flex: 1 1 0;
+  flex: 0 0 calc((100% - 4px) / 3);
   min-width: 0;
 }
 

@@ -14,6 +14,7 @@ function panelList() {
   const nirBlue = short((state.filters && state.filters.nir_blue) || "F110W");
   const nirRed = short((state.filters && state.filters.nir_red) || "F160W");
   return [
+    { id: "photo", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false, photo: true },
     { id: "radec", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false },
     { id: "nir", x: "nir_color", y: "nir_mag", xlabel: `${nirBlue} − ${nirRed}`, ylabel: nirBlue, invertX: false, invertY: true },
     { id: "cmd", x: "color", y: "mag", xlabel: `${b} − ${r}`, ylabel: b, invertX: false, invertY: true },
@@ -30,6 +31,7 @@ const state = {
   drawing: null,
   pan: null,
   zoom: {},
+  sky: null,
 };
 
 function dataRange(values) {
@@ -343,6 +345,38 @@ function restoreBg(canvas) {
   ctx.restore();
 }
 
+function skyRecord() {
+  const rec = state.sky && state.sky[state.galaxy];
+  if (!rec) return null;
+  if (!rec.image) {
+    const img = new Image();
+    rec.image = img;
+    img.onload = () => {
+      const canvas = document.getElementById("photo");
+      if (!canvas) return;
+      canvas._key = "";
+      paintPanel(canvas);
+    };
+    img.src = `sky/${state.galaxy}.jpg`;
+  }
+  if (!rec.image.complete || !rec.image.naturalWidth) return null;
+  return rec;
+}
+
+function drawSky(view) {
+  const rec = skyRecord();
+  if (!rec || !view.panel.photo) return;
+  const { ctx, padL, padT, plotW, plotH } = view;
+  const [x0, y0] = px(view, rec.ra1, rec.dec1);
+  const [x1, y1] = px(view, rec.ra0, rec.dec0);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(padL, padT, plotW, plotH);
+  ctx.clip();
+  ctx.drawImage(rec.image, Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
+  ctx.restore();
+}
+
 function paintPanel(canvas) {
   const stars = state.stars;
   if (!stars) return;
@@ -356,7 +390,8 @@ function paintPanel(canvas) {
   const rect = canvas.getBoundingClientRect();
   const cssW = rect.width || 380;
   const cssH = rect.height || 440;
-  const viewKey = baseKey + JSON.stringify(lim) + "@" + Math.round(cssW) + "x" + Math.round(cssH);
+  const skyReady = panel.photo && skyRecord() ? ":sky" : "";
+  const viewKey = baseKey + JSON.stringify(lim) + "@" + Math.round(cssW) + "x" + Math.round(cssH) + skyReady;
   if (!canvas._view || canvas._key !== viewKey) {
     const view = layout(canvas, lim, panel, cssW, cssH);
     view.stars = stars;
@@ -364,6 +399,7 @@ function paintPanel(canvas) {
     canvas._view = view;
     canvas._key = viewKey;
     view.ctx.clearRect(0, 0, view.cssW, view.cssH);
+    drawSky(view);
     drawAxes(view);
     if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) {
       view.ctx.fillStyle = "#666";
@@ -372,12 +408,12 @@ function paintPanel(canvas) {
       view.ctx.textBaseline = "middle";
       view.ctx.fillText("No near-infrared photometry", view.padL + view.plotW / 2, view.padT + view.plotH / 2);
     }
-    stamp(view, null, [70, 70, 70, 140], 2.2);
+    if (!panel.photo) stamp(view, null, [70, 70, 70, 140], 2.2);
     snapshot(canvas);
   } else {
     restoreBg(canvas);
   }
-  if (state.selected) stamp(canvas._view, state.selected, [0, 196, 214, 220], 2.6);
+  if (state.selected && !panel.photo) stamp(canvas._view, state.selected, [0, 196, 214, 220], 2.6);
   if (state.drawing && state.drawing.panel === panel.id) drawDraft(canvas._view);
 }
 
@@ -590,6 +626,11 @@ async function main() {
     opt.value = galaxy.id;
     opt.textContent = galaxy.label;
     select.appendChild(opt);
+  }
+  try {
+    state.sky = await (await fetch("sky/index.json")).json();
+  } catch (err) {
+    state.sky = null;
   }
   state.galaxy = state.catalog.default;
   state.tier = state.catalog.defaultTier;
