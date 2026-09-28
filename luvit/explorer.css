@@ -3,7 +3,8 @@
   --ink: #1c1c1c;
   --card: #f6f7f9;
   --line: #d5d7dc;
-  --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 175px) * 380 / 880));
+  --plot-aspect: 1.2;
+  --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 175px) * var(--plot-aspect) / 2));
   --plots-w: calc(3 * var(--plot-w) + 4px);
   --edge: 16px;
   --in-left: max(var(--edge), calc((100vw - var(--plots-w)) / 2));
@@ -220,7 +221,7 @@ button.danger {
 .plot {
   position: relative;
   flex: 0 1 auto;
-  width: min(calc((100% - 16px) / 3), calc((100vh - 175px) * 380 / 880));
+  width: min(calc((100% - 16px) / 3), calc((100vh - 175px) * var(--plot-aspect) / 2));
   min-width: 0;
 }
 
@@ -228,7 +229,7 @@ button.danger {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 380 / 440;
+  aspect-ratio: var(--plot-aspect);
   background: #fff;
   border-radius: 8px;
   cursor: crosshair;
