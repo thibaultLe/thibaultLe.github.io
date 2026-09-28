@@ -18,7 +18,7 @@ function panelList() {
 
 const state = {
   catalog: null,
-  galaxy: "ugc8508",
+  galaxy: "sagdig",
   tier: "dgst",
   stars: null,
   selected: null,
