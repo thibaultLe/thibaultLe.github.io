@@ -613,11 +613,35 @@ function useCleanStars() {
   state.filters = tier;
 }
 
+function ensureGalaxyMenu() {
+  let list = document.getElementById("galaxyList");
+  let button = document.getElementById("galaxyButton");
+  if (list && button) return { list, button };
+  const picker = document.createElement("span");
+  picker.className = "galaxy-picker";
+  button = document.createElement("button");
+  button.type = "button";
+  button.id = "galaxyButton";
+  button.setAttribute("aria-haspopup", "listbox");
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute("aria-controls", "galaxyList");
+  list = document.createElement("ul");
+  list.id = "galaxyList";
+  list.setAttribute("role", "listbox");
+  list.hidden = true;
+  picker.append(button, list);
+  const select = document.getElementById("galaxy");
+  const wrap = document.querySelector(".galaxy-wrap");
+  if (select) select.replaceWith(picker);
+  else if (wrap) wrap.appendChild(picker);
+  else document.body.prepend(picker);
+  return { list, button };
+}
+
 async function main() {
   const res = await fetch("data/catalog.json");
   state.catalog = await res.json();
-  const list = document.getElementById("galaxyList");
-  const button = document.getElementById("galaxyButton");
+  const { list, button } = ensureGalaxyMenu();
   for (const galaxy of state.catalog.galaxies) {
     const item = document.createElement("li");
     item.setAttribute("role", "option");
