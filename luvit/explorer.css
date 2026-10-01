@@ -4,7 +4,7 @@
   --card: #f6f7f9;
   --line: #d5d7dc;
   --plot-aspect: 1.2;
-  --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 230px) * var(--plot-aspect) / 3));
+  --plot-w: calc((100vw - 40px) / 3);
   --plots-w: calc(3 * var(--plot-w) + 4px);
   --edge: 16px;
   --in-left: max(var(--edge), calc((100vw - var(--plots-w)) / 2));
@@ -220,8 +220,10 @@ button.danger {
 
 .plot {
   position: relative;
+  display: flex;
+  flex-direction: column;
   flex: 0 1 auto;
-  width: min(calc((100% - 16px) / 3), calc((100vh - 230px) * var(--plot-aspect) / 3));
+  width: calc((100% - 4px) / 3);
   min-width: 0;
 }
 
@@ -236,6 +238,12 @@ button.danger {
   touch-action: none;
 }
 
-.plot p { margin: 0 0 2px; font-size: 0.9rem; font-weight: 650; }
+.plot p {
+  margin: 0 0 2px;
+  min-height: 2.4em;
+  line-height: 1.2;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
 
 .status { margin: 4px 0 0; min-height: 1.2em; font-size: 0.9rem; }
