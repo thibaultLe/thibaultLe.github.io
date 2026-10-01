@@ -12,7 +12,10 @@ function panelList() {
     { id: "radec", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false },
     { id: "nir", x: "nir_color", y: "nir_mag", xlabel: `${nirBlue} − ${nirRed}`, ylabel: nirBlue, invertX: false, invertY: true },
     { id: "cmd", x: "color", y: "mag", xlabel: `${b} − ${r}`, ylabel: b, invertX: false, invertY: true },
-    { id: "uv", x: "uv_color", y: "uv_mag", xlabel: `F275W − ${b}`, ylabel: "F275W", invertX: false, invertY: true },
+    { id: "uv", x: "uv_color", y: "uv_mag", xlabel: `F336W − ${b}`, ylabel: "F336W", invertX: false, invertY: true },
+    { id: "cc-uv", x: "uv_color", y: "color", xlabel: `F336W − ${b}`, ylabel: `${b} − ${r}`, invertX: false, invertY: false },
+    { id: "cc-ir", x: "nir_color", y: "color", xlabel: `${nirBlue} − ${nirRed}`, ylabel: `${b} − ${r}`, invertX: false, invertY: false },
+    { id: "cc-uvnir", x: "uv_color", y: "nir_color", xlabel: `F336W − ${b}`, ylabel: `${nirBlue} − ${nirRed}`, invertX: false, invertY: false },
   ];
 }
 
@@ -127,9 +130,22 @@ function countFinite(values) {
   return n;
 }
 
+function missingNote(panel, stars) {
+  if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) return "No near-infrared photometry";
+  if (panel.id === "cc-ir" && countFinite(stars.nir_color) < 2) return "No near-infrared photometry";
+  if (panel.id === "cc-uvnir" && countFinite(stars.nir_color) < 2) return "No near-infrared photometry";
+  return "";
+}
+
 function limits(panel, stars) {
-  if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) {
+  if (panel.id === "nir" && missingNote(panel, stars)) {
     return { xlim: [-0.75, 3], ylim: [13.5, 25.75] };
+  }
+  if (panel.id === "cc-ir" && missingNote(panel, stars)) {
+    return { xlim: [-0.75, 1.5], ylim: [-1, 4] };
+  }
+  if (panel.id === "cc-uvnir" && missingNote(panel, stars)) {
+    return { xlim: [-2, 3], ylim: [-0.75, 1.5] };
   }
   return {
     xlim: dataRange(stars[panel.x]),
@@ -403,12 +419,13 @@ function paintPanel(canvas) {
     view.ctx.clearRect(0, 0, view.cssW, view.cssH);
     drawSky(view);
     drawAxes(view);
-    if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) {
+    const note = missingNote(panel, stars);
+    if (note) {
       view.ctx.fillStyle = "#666";
       view.ctx.font = "14px Segoe UI, Helvetica, Arial, sans-serif";
       view.ctx.textAlign = "center";
       view.ctx.textBaseline = "middle";
-      view.ctx.fillText("No near-infrared photometry", view.padL + view.plotW / 2, view.padT + view.plotH / 2);
+      view.ctx.fillText(note, view.padL + view.plotW / 2, view.padT + view.plotH / 2);
     }
     if (!panel.photo) stamp(view, null, [70, 70, 70, 140], 2.2);
     snapshot(canvas);

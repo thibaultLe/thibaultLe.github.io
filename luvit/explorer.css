@@ -4,7 +4,7 @@
   --card: #f6f7f9;
   --line: #d5d7dc;
   --plot-aspect: 1.2;
-  --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 175px) * var(--plot-aspect) / 2));
+  --plot-w: min(calc((100vw - 40px) / 3), calc((100vh - 230px) * var(--plot-aspect) / 3));
   --plots-w: calc(3 * var(--plot-w) + 4px);
   --edge: 16px;
   --in-left: max(var(--edge), calc((100vw - var(--plots-w)) / 2));
@@ -221,7 +221,7 @@ button.danger {
 .plot {
   position: relative;
   flex: 0 1 auto;
-  width: min(calc((100% - 16px) / 3), calc((100vh - 175px) * var(--plot-aspect) / 2));
+  width: min(calc((100% - 16px) / 3), calc((100vh - 230px) * var(--plot-aspect) / 3));
   min-width: 0;
 }
 

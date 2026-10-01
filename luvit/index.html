@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LUVIT Data Explorer</title>
   <link rel="icon" href="/assets/galaxy.png">
-  <link rel="stylesheet" href="explorer.css?v=24">
+  <link rel="stylesheet" href="explorer.css?v=25">
 </head>
 <body>
   <div class="what-wrap">
     <button type="button" id="what" aria-expanded="false" aria-controls="whatPanel">What is this?</button>
     <div class="what-panel" id="whatPanel" hidden>
       <p>Each dot is a star in a small nearby galaxy, photographed by the Hubble Space Telescope.</p>
-      <p>The top row is a photograph of the galaxy and a map of where the stars are on the sky. The bottom row compares how bright each star is with its color, in infrared, visible, and ultraviolet light. Hot young stars and cooler older ones land in different places.</p>
+      <p>The top row is a photograph of the galaxy and a map of where the stars are on the sky. The middle row compares how bright each star is with its color, in infrared, visible, and ultraviolet light. The bottom row compares two colors at once. Hot young stars and cooler older ones land in different places.</p>
       <p>Draw a loop on any diagram. Those same stars turn cyan on every panel, so you can see both where they are and what kind of star they are.</p>
     </div>
   </div>
@@ -51,6 +51,20 @@
         <canvas id="uv" width="720" height="600"></canvas>
       </div>
     </div>
+    <div class="plots cmd-row">
+      <div class="plot">
+        <p>UV–optical color–color</p>
+        <canvas id="cc-uv" width="720" height="600"></canvas>
+      </div>
+      <div class="plot">
+        <p>Optical–IR color–color</p>
+        <canvas id="cc-ir" width="720" height="600"></canvas>
+      </div>
+      <div class="plot">
+        <p>UV–IR color–color</p>
+        <canvas id="cc-uvnir" width="720" height="600"></canvas>
+      </div>
+    </div>
     <p class="status" id="status"></p>
     <p class="hint">Scroll on a plot to zoom in. Right-click and drag to move it.</p>
     <div class="row action-row">
@@ -65,7 +79,7 @@
     </section>
     <p class="home"><a href="/">thibaultle.github.io</a></p>
   </main>
-  <script src="explorer.js?v=22"></script>
+  <script src="explorer.js?v=28"></script>
   <script>
     (function () {
       var button = document.getElementById("what");
