@@ -588,8 +588,9 @@ function bindCanvas(canvas) {
   });
   canvas.addEventListener("wheel", (event) => {
     if (!canvas._view) return;
-    event.preventDefault();
     const p = pointerPos(canvas, event);
+    if (!insidePlot(canvas._view, p[0], p[1])) return;
+    event.preventDefault();
     zoomCanvas(canvas, p[0], p[1], event.deltaY > 0 ? 1.2 : 1 / 1.2);
   }, { passive: false });
 }
