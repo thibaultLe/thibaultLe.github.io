@@ -1,4 +1,5 @@
 const CHANNELS = ["ra", "dec", "color", "mag", "uv_color", "uv_mag", "nir_color", "nir_mag"];
+const EXTRA_CHANNELS = ["nuv_color", "nuv_mag"];
 function panelList() {
   const blue = (state.filters && state.filters.blue) || "F475W";
   const red = (state.filters && state.filters.red) || "F814W";
@@ -7,15 +8,18 @@ function panelList() {
   const r = short(red);
   const nirBlue = short((state.filters && state.filters.nir_blue) || "F110W");
   const nirRed = short((state.filters && state.filters.nir_red) || "F160W");
+  const nuvBlue = short((state.filters && state.filters.nuv_blue) || "F275W");
+  const nuvRed = short((state.filters && state.filters.nuv_red) || "F336W");
   return [
     { id: "photo", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false, photo: true },
     { id: "radec", x: "ra", y: "dec", xlabel: "RA (deg)", ylabel: "Dec (deg)", invertX: true, invertY: false },
-    { id: "nir", x: "nir_color", y: "nir_mag", xlabel: `${nirBlue} − ${nirRed}`, ylabel: nirBlue, invertX: false, invertY: true },
     { id: "cmd", x: "color", y: "mag", xlabel: `${b} − ${r}`, ylabel: b, invertX: false, invertY: true },
-    { id: "uv", x: "uv_color", y: "uv_mag", xlabel: `F336W − ${b}`, ylabel: "F336W", invertX: false, invertY: true },
-    { id: "cc-uv", x: "uv_color", y: "color", xlabel: `F336W − ${b}`, ylabel: `${b} − ${r}`, invertX: false, invertY: false },
+    { id: "nir", x: "nir_color", y: "nir_mag", xlabel: `${nirBlue} − ${nirRed}`, ylabel: nirBlue, invertX: false, invertY: true },
+    { id: "uv", x: "uv_color", y: "uv_mag", xlabel: `${nuvRed} − ${b}`, ylabel: nuvRed, invertX: false, invertY: true },
+    { id: "nuv", x: "nuv_color", y: "nuv_mag", xlabel: `${nuvBlue} − ${nuvRed}`, ylabel: nuvBlue, invertX: false, invertY: true },
+    { id: "cc-uv", x: "uv_color", y: "color", xlabel: `${nuvRed} − ${b}`, ylabel: `${b} − ${r}`, invertX: false, invertY: false },
     { id: "cc-ir", x: "nir_color", y: "color", xlabel: `${nirBlue} − ${nirRed}`, ylabel: `${b} − ${r}`, invertX: false, invertY: false },
-    { id: "cc-uvnir", x: "uv_color", y: "nir_color", xlabel: `F336W − ${b}`, ylabel: `${nirBlue} − ${nirRed}`, invertX: false, invertY: false },
+    { id: "cc-uvnir", x: "uv_color", y: "nir_color", xlabel: `${nuvRed} − ${b}`, ylabel: `${nirBlue} − ${nirRed}`, invertX: false, invertY: false },
   ];
 }
 
@@ -132,6 +136,7 @@ function countFinite(values) {
 
 function missingNote(panel, stars) {
   if (panel.id === "nir" && countFinite(stars[panel.y]) < 2) return "No near-infrared photometry";
+  if (panel.id === "nuv" && countFinite(stars[panel.y]) < 2) return "No NUV photometry";
   if (panel.id === "cc-ir" && countFinite(stars.nir_color) < 2) return "No near-infrared photometry";
   if (panel.id === "cc-uvnir" && countFinite(stars.nir_color) < 2) return "No near-infrared photometry";
   return "";
@@ -140,6 +145,9 @@ function missingNote(panel, stars) {
 function limits(panel, stars) {
   if (panel.id === "nir" && missingNote(panel, stars)) {
     return { xlim: [-0.75, 3], ylim: [13.5, 25.75] };
+  }
+  if (panel.id === "nuv" && missingNote(panel, stars)) {
+    return { xlim: [-1.5, 2.5], ylim: [18, 27] };
   }
   if (panel.id === "cc-ir" && missingNote(panel, stars)) {
     return { xlim: [-0.75, 1.5], ylim: [-1, 4] };
@@ -162,7 +170,13 @@ function decode(buffer) {
   const view = new DataView(buffer);
   const n = view.getUint32(4, true);
   let off = 8;
-  const nchan = CHANNELS.length;
+  const baseChan = CHANNELS.length;
+  const leftover = buffer.byteLength - (8 + baseChan * 8 + n * baseChan * 2);
+  const extraChan = leftover >= EXTRA_CHANNELS.length * 8 + n * EXTRA_CHANNELS.length * 2
+    ? EXTRA_CHANNELS.length
+    : 0;
+  const nchan = baseChan + extraChan;
+  const names = CHANNELS.concat(EXTRA_CHANNELS.slice(0, extraChan));
   const scales = [];
   for (let c = 0; c < nchan; c++) {
     const lo = view.getFloat32(off, true);
@@ -172,13 +186,22 @@ function decode(buffer) {
     scales.push([lo, hi]);
   }
   const stars = { n };
-  for (const name of CHANNELS) stars[name] = new Float32Array(n);
+  for (const name of CHANNELS.concat(EXTRA_CHANNELS)) stars[name] = new Float32Array(n).fill(NaN);
   for (let i = 0; i < n; i++) {
     for (let c = 0; c < nchan; c++) {
       const u = view.getUint16(off, true);
       off += 2;
       const [lo, hi] = scales[c];
-      stars[CHANNELS[c]][i] = u === 65535 ? NaN : lo + (u / 65534) * (hi - lo);
+      stars[names[c]][i] = u === 65535 ? NaN : lo + (u / 65534) * (hi - lo);
+    }
+  }
+  if (extraChan > 0) {
+    for (let i = 0; i < n; i++) {
+      if (Number.isFinite(stars.nuv_mag[i]) && Number.isFinite(stars.uv_mag[i])) {
+        stars.nuv_color[i] = stars.nuv_mag[i] - stars.uv_mag[i];
+      } else if (Number.isFinite(stars.nuv_color[i])) {
+        stars.nuv_color[i] = -stars.nuv_color[i];
+      }
     }
   }
   return stars;
